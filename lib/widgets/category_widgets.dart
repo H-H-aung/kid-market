@@ -8,11 +8,13 @@ class CategoryRow extends StatelessWidget {
   final List<Category> items;
   final List<Product> productItems;
   final ValueChanged<Category> onSelected;
+  final String? selectedId;
   const CategoryRow({
     super.key,
     this.items = categories,
     this.productItems = products,
     required this.onSelected,
+    this.selectedId,
   });
 
   @override
@@ -34,6 +36,7 @@ class CategoryRow extends StatelessWidget {
                   child: SizedBox(
                     width: width,
                     child: CategoryTile(
+                      selected: selectedId == item.id,
                       item: item,
                       productCount: productItems
                           .where((p) => p.categoryId == item.id)
@@ -54,50 +57,61 @@ class CategoryTile extends StatelessWidget {
   final Category item;
   final int productCount;
   final VoidCallback onTap;
+  final bool selected;
   const CategoryTile({
     super.key,
     required this.item,
     required this.productCount,
     required this.onTap,
+    this.selected = false,
   });
 
   @override
-  Widget build(BuildContext context) => Material(
-    color: Color.lerp(item.color, Colors.white, .55),
-    borderRadius: BorderRadius.circular(18),
-    clipBehavior: Clip.antiAlias,
-    child: InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: item.color,
-                borderRadius: BorderRadius.circular(18),
+  Widget build(BuildContext context) => Semantics(
+    selected: selected,
+    child: Material(
+      color: Color.lerp(item.color, Colors.white, .55),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: BorderSide(
+          color: selected ? blue : Colors.transparent,
+          width: 1.5,
+        ),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: item.color,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Icon(item.icon, size: 26, color: ink),
               ),
-              child: Icon(item.icon, size: 26, color: ink),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              item.short,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w800,
-                color: ink,
+              const SizedBox(height: 8),
+              Text(
+                item.short,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  color: ink,
+                ),
               ),
-            ),
-            const SizedBox(height: 3),
-            Text(
-              productCount == 1 ? '1 item' : '$productCount items',
-              style: const TextStyle(color: muted, fontSize: 10, height: 1.4),
-            ),
-          ],
+              const SizedBox(height: 3),
+              Text(
+                productCount == 1 ? '1 item' : '$productCount items',
+                style: const TextStyle(color: muted, fontSize: 10, height: 1.4),
+              ),
+            ],
+          ),
         ),
       ),
     ),

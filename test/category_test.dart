@@ -40,6 +40,15 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Building Blocks Set'), findsOneWidget);
       expect(find.text('Good Night Stories'), findsNothing);
+      expect(find.byType(ProductListScreen), findsNothing);
+      expect(
+        tester.widget<CategoryTile>(find.byType(CategoryTile).at(2)).selected,
+        isTrue,
+      );
+      await tester.tap(find.text('View all'));
+      await tester.pumpAndSettle();
+      expect(find.text('All discoveries'), findsOneWidget);
+      expect(find.text('Good Night Stories'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );

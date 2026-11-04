@@ -10,8 +10,14 @@ class HomeHeader extends StatelessWidget {
     padding: EdgeInsets.fromLTRB(16, 16, 16, 4),
     child: Row(
       children: [
-        BrandLogo(),
-        Spacer(),
+        Expanded(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: BrandLogo(),
+          ),
+        ),
+        SizedBox(width: 16),
         CircleAvatar(
           backgroundColor: Colors.white,
           child: Icon(Icons.notifications_none_rounded, color: ink),
