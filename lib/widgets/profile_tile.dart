@@ -5,37 +5,77 @@ class ProfileTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final Color color;
+  final String? subtitle;
   final VoidCallback? onTap;
-  const ProfileTile(this.icon, this.title, this.color, {super.key, this.onTap});
+  const ProfileTile(
+    this.icon,
+    this.title,
+    this.color, {
+    super.key,
+    this.subtitle,
+    this.onTap,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    final plain = color == Colors.transparent;
-    return Container(
-      margin: EdgeInsets.only(bottom: plain ? 0 : 9),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(plain ? 0 : 15),
-        border: plain
-            ? const Border(bottom: BorderSide(color: Color(0xFFE8EEF5)))
-            : Border.all(color: const Color(0xFFE4ECF4)),
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 10),
+    child: Material(
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: const BorderSide(color: Color(0xFFE8EEF5)),
       ),
-      child: ListTile(
-        dense: plain,
-        contentPadding: EdgeInsets.symmetric(horizontal: plain ? 2 : 16),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
         onTap: onTap,
-        leading: Container(
-          width: plain ? 30 : 40,
-          height: plain ? 30 : 40,
-          decoration: BoxDecoration(
-            color: plain ? const Color(0xFFEAF5FF) : color,
-            borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(icon, color: onTap == null ? muted : ink, size: 23),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: onTap == null ? muted : ink,
+                      ),
+                    ),
+                    if (subtitle != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle!,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          height: 1.4,
+                          color: muted,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              if (onTap != null) ...[
+                const SizedBox(width: 8),
+                const Icon(Icons.chevron_right_rounded, size: 20, color: muted),
+              ],
+            ],
           ),
-          child: Icon(icon, size: plain ? 18 : 21, color: plain ? blue : ink),
         ),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
-        trailing: const Icon(Icons.chevron_right_rounded, size: 20),
       ),
-    );
-  }
+    ),
+  );
 }
