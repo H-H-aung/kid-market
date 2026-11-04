@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:jojo/models/product.dart';
-import 'package:jojo/models/category.dart';
-import 'package:jojo/models/course.dart';
+import 'package:kids_mart/models/product.dart';
+import 'package:kids_mart/models/category.dart';
+import 'package:kids_mart/models/course.dart';
 
 const categories = [
   Category(

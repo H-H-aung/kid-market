@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:jojo/models/product.dart';
-import 'package:jojo/screens/product_list_screen.dart';
-import 'package:jojo/widgets/category_widgets.dart';
-import 'package:jojo/widgets/home_header.dart';
-import 'package:jojo/widgets/learning_banner.dart';
-import 'package:jojo/widgets/product_grid.dart';
-import 'package:jojo/widgets/search_box.dart';
-import 'package:jojo/widgets/section_header.dart';
+import 'package:kids_mart/models/product.dart';
+import 'package:kids_mart/screens/product_list_screen.dart';
+import 'package:kids_mart/widgets/category_widgets.dart';
+import 'package:kids_mart/widgets/home_header.dart';
+import 'package:kids_mart/widgets/learning_banner.dart';
+import 'package:kids_mart/widgets/product_grid.dart';
+import 'package:kids_mart/widgets/search_box.dart';
+import 'package:kids_mart/widgets/section_header.dart';
 
 class HomeScreen extends StatelessWidget {
   final ValueChanged<Product> onAdd;

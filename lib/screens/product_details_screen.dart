@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:jojo/constants/colors.dart';
-import 'package:jojo/models/product.dart';
-import 'package:jojo/widgets/mini_chip.dart';
-import 'package:jojo/widgets/product_cover.dart';
+import 'package:kids_mart/constants/colors.dart';
+import 'package:kids_mart/models/product.dart';
+import 'package:kids_mart/widgets/mini_chip.dart';
+import 'package:kids_mart/widgets/product_cover.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
   final Product product;

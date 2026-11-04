@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:jojo/constants/colors.dart';
-import 'package:jojo/models/product.dart';
-import 'package:jojo/screens/product_list_screen.dart';
-import 'package:jojo/widgets/category_widgets.dart';
+import 'package:kids_mart/constants/colors.dart';
+import 'package:kids_mart/models/product.dart';
+import 'package:kids_mart/screens/product_list_screen.dart';
+import 'package:kids_mart/widgets/category_widgets.dart';
 
 class ExploreScreen extends StatelessWidget {
   final ValueChanged<Product> onAdd;

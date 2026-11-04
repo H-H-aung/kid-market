@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jojo/widgets/order_card.dart';
+import 'package:kids_mart/widgets/order_card.dart';
 
 class OrdersScreen extends StatelessWidget {
   const OrdersScreen({super.key});
@@ -10,9 +10,9 @@ class OrdersScreen extends StatelessWidget {
     body: ListView(
       padding: const EdgeInsets.all(16),
       children: const [
-        OrderCard('JOJO-1042', 'Preparing your order', .35, Color(0xFFFFE7A8)),
+        OrderCard('KM-1042', 'Preparing your order', .35, Color(0xFFFFE7A8)),
         SizedBox(height: 11),
-        OrderCard('JOJO-1038', 'Delivered', 1, Color(0xFFD1F4E8)),
+        OrderCard('KM-1038', 'Delivered', 1, Color(0xFFD1F4E8)),
       ],
     ),
   );

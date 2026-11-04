@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:jojo/data/app_data.dart';
-import 'package:jojo/widgets/product_row.dart';
+import 'package:kids_mart/data/app_data.dart';
+import 'package:kids_mart/widgets/product_row.dart';
 
 class WishlistScreen extends StatelessWidget {
   const WishlistScreen({super.key});

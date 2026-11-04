@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:jojo/constants/colors.dart';
-import 'package:jojo/screens/orders_screen.dart';
-import 'package:jojo/screens/wishlist_screen.dart';
-import 'package:jojo/widgets/kid_avatar.dart';
-import 'package:jojo/widgets/profile_tile.dart';
+import 'package:kids_mart/constants/colors.dart';
+import 'package:kids_mart/screens/orders_screen.dart';
+import 'package:kids_mart/screens/wishlist_screen.dart';
+import 'package:kids_mart/widgets/kid_avatar.dart';
+import 'package:kids_mart/widgets/profile_tile.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});

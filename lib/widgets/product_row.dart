@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:jojo/constants/colors.dart';
-import 'package:jojo/models/product.dart';
-import 'package:jojo/widgets/product_cover.dart';
+import 'package:kids_mart/constants/colors.dart';
+import 'package:kids_mart/models/product.dart';
+import 'package:kids_mart/widgets/product_cover.dart';
 
 class ProductRow extends StatelessWidget {
   final Product product;

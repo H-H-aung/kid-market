@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:jojo/models/course.dart';
-import 'package:jojo/constants/colors.dart';
-import 'package:jojo/widgets/info_box.dart';
+import 'package:kids_mart/models/course.dart';
+import 'package:kids_mart/constants/colors.dart';
+import 'package:kids_mart/widgets/info_box.dart';
 
 class CourseDetailsScreen extends StatelessWidget {
   final Course course;

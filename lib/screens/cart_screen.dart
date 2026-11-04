@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:jojo/models/product.dart';
-import 'package:jojo/screens/order_success_screen.dart';
-import 'package:jojo/widgets/empty_state.dart';
-import 'package:jojo/widgets/price_line.dart';
-import 'package:jojo/widgets/product_row.dart';
+import 'package:kids_mart/models/product.dart';
+import 'package:kids_mart/screens/order_success_screen.dart';
+import 'package:kids_mart/widgets/empty_state.dart';
+import 'package:kids_mart/widgets/price_line.dart';
+import 'package:kids_mart/widgets/product_row.dart';
 
 class CartScreen extends StatelessWidget {
   final List<Product> items;

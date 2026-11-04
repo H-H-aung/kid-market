@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:jojo/constants/colors.dart';
-import 'package:jojo/screens/main_shell.dart';
-import 'package:jojo/widgets/kid_art.dart';
+import 'package:kids_mart/constants/colors.dart';
+import 'package:kids_mart/screens/main_shell.dart';
+import 'package:kids_mart/widgets/kid_art.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});

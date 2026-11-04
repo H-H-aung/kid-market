@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jojo/constants/colors.dart';
+import 'package:kids_mart/constants/colors.dart';
 
 class MiniChip extends StatelessWidget {
   final String text;

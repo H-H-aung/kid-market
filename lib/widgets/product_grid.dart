@@ -1,9 +1,9 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:jojo/data/app_data.dart';
-import 'package:jojo/models/product.dart';
-import 'package:jojo/screens/product_details_screen.dart';
-import 'package:jojo/widgets/product_card.dart';
+import 'package:kids_mart/data/app_data.dart';
+import 'package:kids_mart/models/product.dart';
+import 'package:kids_mart/screens/product_details_screen.dart';
+import 'package:kids_mart/widgets/product_card.dart';
 
 class ProductGrid extends StatelessWidget {
   final ValueChanged<Product> onAdd;

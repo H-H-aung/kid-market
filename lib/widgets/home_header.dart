@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:jojo/constants/colors.dart';
-import 'package:jojo/widgets/brand_logo.dart';
+import 'package:kids_mart/constants/colors.dart';
+import 'package:kids_mart/widgets/brand_logo.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({super.key});

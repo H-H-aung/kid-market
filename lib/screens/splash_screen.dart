@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:jojo/constants/colors.dart';
-import 'package:jojo/screens/onboarding_screen.dart';
-import 'package:jojo/widgets/brand_logo.dart';
-import 'package:jojo/widgets/kid_art.dart';
+import 'package:kids_mart/constants/colors.dart';
+import 'package:kids_mart/screens/onboarding_screen.dart';
+import 'package:kids_mart/widgets/brand_logo.dart';
+import 'package:kids_mart/widgets/kid_art.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

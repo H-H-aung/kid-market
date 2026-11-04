@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jojo/constants/colors.dart';
+import 'package:kids_mart/constants/colors.dart';
 
 class InfoBox extends StatelessWidget {
   final IconData icon;

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:jojo/models/product.dart';
-import 'package:jojo/screens/cart_screen.dart';
-import 'package:jojo/screens/explore_screen.dart';
-import 'package:jojo/screens/home_screen.dart';
-import 'package:jojo/screens/profile_screen.dart';
-import 'package:jojo/widgets/glass_nav.dart';
+import 'package:kids_mart/models/product.dart';
+import 'package:kids_mart/screens/cart_screen.dart';
+import 'package:kids_mart/screens/explore_screen.dart';
+import 'package:kids_mart/screens/home_screen.dart';
+import 'package:kids_mart/screens/profile_screen.dart';
+import 'package:kids_mart/widgets/glass_nav.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});

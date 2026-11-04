@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:jojo/constants/colors.dart';
-import 'package:jojo/data/app_data.dart';
-import 'package:jojo/models/product.dart';
-import 'package:jojo/widgets/product_grid.dart';
-import 'package:jojo/widgets/empty_state.dart';
+import 'package:kids_mart/constants/colors.dart';
+import 'package:kids_mart/data/app_data.dart';
+import 'package:kids_mart/models/product.dart';
+import 'package:kids_mart/widgets/product_grid.dart';
+import 'package:kids_mart/widgets/empty_state.dart';
 
 class ProductListScreen extends StatelessWidget {
   final String title;

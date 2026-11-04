@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:jojo/constants/colors.dart';
-import 'package:jojo/data/app_data.dart';
-import 'package:jojo/models/category.dart';
-import 'package:jojo/models/product.dart';
+import 'package:kids_mart/constants/colors.dart';
+import 'package:kids_mart/data/app_data.dart';
+import 'package:kids_mart/models/category.dart';
+import 'package:kids_mart/models/product.dart';
 
 class CategoryRow extends StatelessWidget {
   final List<Category> items;
@@ -20,24 +20,30 @@ class CategoryRow extends StatelessWidget {
     padding: const EdgeInsets.symmetric(horizontal: 16),
     child: LayoutBuilder(
       builder: (context, constraints) {
-        final columns = constraints.maxWidth >= 280 ? 2 : 1;
-        final width = (constraints.maxWidth - (columns - 1) * 12) / columns;
-        return Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children: [
-            for (final item in items)
-              SizedBox(
-                width: width,
-                child: CategoryTile(
-                  item: item,
-                  productCount: productItems
-                      .where((p) => p.categoryId == item.id)
-                      .length,
-                  onTap: () => onSelected(item),
+        final scale = MediaQuery.textScalerOf(context).scale(1);
+        final width =
+            ((constraints.maxWidth - 30) / 4).clamp(84.0, 110.0) * scale;
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (final item in items)
+                Padding(
+                  padding: EdgeInsets.only(right: item == items.last ? 0 : 10),
+                  child: SizedBox(
+                    width: width,
+                    child: CategoryTile(
+                      item: item,
+                      productCount: productItems
+                          .where((p) => p.categoryId == item.id)
+                          .length,
+                      onTap: () => onSelected(item),
+                    ),
+                  ),
                 ),
-              ),
-          ],
+            ],
+          ),
         );
       },
     ),
@@ -58,45 +64,38 @@ class CategoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Material(
     color: Color.lerp(item.color, Colors.white, .55),
-    borderRadius: BorderRadius.circular(24),
+    borderRadius: BorderRadius.circular(18),
     clipBehavior: Clip.antiAlias,
     child: InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
-              children: [
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: item.color,
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  child: Icon(item.icon, size: 30, color: ink),
-                ),
-                const Spacer(),
-                const Icon(Icons.arrow_outward_rounded, size: 18, color: muted),
-              ],
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: item.color,
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: Icon(item.icon, size: 26, color: ink),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             Text(
               item.short,
               style: const TextStyle(
-                fontSize: 17,
+                fontSize: 12,
                 fontWeight: FontWeight.w800,
                 color: ink,
               ),
             ),
-            const SizedBox(height: 5),
+            const SizedBox(height: 3),
             Text(
-              productCount == 1
-                  ? '1 item to explore'
-                  : '$productCount items to explore',
-              style: const TextStyle(color: muted, fontSize: 11, height: 1.4),
+              productCount == 1 ? '1 item' : '$productCount items',
+              style: const TextStyle(color: muted, fontSize: 10, height: 1.4),
             ),
           ],
         ),

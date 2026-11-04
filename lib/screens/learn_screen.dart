@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:jojo/constants/colors.dart';
-import 'package:jojo/widgets/lesson_tile.dart';
-import 'package:jojo/widgets/progress_card.dart';
+import 'package:kids_mart/constants/colors.dart';
+import 'package:kids_mart/widgets/lesson_tile.dart';
+import 'package:kids_mart/widgets/progress_card.dart';
 
 class LearnScreen extends StatelessWidget {
   const LearnScreen({super.key});

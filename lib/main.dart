@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:jojo/constants/colors.dart';
-import 'package:jojo/screens/splash_screen.dart';
+import 'package:kids_mart/constants/colors.dart';
+import 'package:kids_mart/screens/splash_screen.dart';
 
-void main() => runApp(const JoJoLearnApp());
+void main() => runApp(const KidsMartApp());
 
-class JoJoLearnApp extends StatelessWidget {
-  const JoJoLearnApp({super.key});
+class KidsMartApp extends StatelessWidget {
+  const KidsMartApp({super.key});
 
   @override
   Widget build(BuildContext context) {

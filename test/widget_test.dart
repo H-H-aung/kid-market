@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:jojo/main.dart';
+import 'package:kids_mart/main.dart';
 
 void main() {
   testWidgets('Kids education splash smoke test', (tester) async {
-    await tester.pumpWidget(const JoJoLearnApp());
+    await tester.pumpWidget(const KidsMartApp());
 
     expect(find.text('Kids'), findsOneWidget);
     expect(find.text('Mart'), findsOneWidget);

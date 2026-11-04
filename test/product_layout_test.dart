@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:jojo/data/app_data.dart';
-import 'package:jojo/screens/product_list_screen.dart';
-import 'package:jojo/widgets/glass_nav.dart';
+import 'package:kids_mart/data/app_data.dart';
+import 'package:kids_mart/screens/product_list_screen.dart';
+import 'package:kids_mart/widgets/glass_nav.dart';
 
 void main() {
   for (final width in [320.0, 390.0, 800.0]) {

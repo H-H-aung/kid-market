@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:jojo/constants/colors.dart';
-import 'package:jojo/data/app_data.dart';
-import 'package:jojo/screens/course_details_screen.dart';
+import 'package:kids_mart/constants/colors.dart';
+import 'package:kids_mart/data/app_data.dart';
+import 'package:kids_mart/screens/course_details_screen.dart';
 
 class CourseRow extends StatelessWidget {
   const CourseRow({super.key});

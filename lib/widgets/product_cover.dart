@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:jojo/constants/colors.dart';
-import 'package:jojo/models/product.dart';
+import 'package:kids_mart/constants/colors.dart';
+import 'package:kids_mart/models/product.dart';
 
 class ProductCover extends StatelessWidget {
   final Product product;
