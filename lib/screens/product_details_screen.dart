@@ -39,11 +39,17 @@ class ProductDetailsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Row(
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              const Icon(Icons.star_rounded, color: Color(0xFFFFB700), size: 19),
+              const Icon(
+                Icons.star_rounded,
+                color: Color(0xFFFFB700),
+                size: 19,
+              ),
               const Text(' 4.9  (128 reviews)', style: TextStyle(color: muted)),
-              const Spacer(),
               Text(
                 product.age,
                 style: const TextStyle(
@@ -96,11 +102,8 @@ class ProductDetailsScreen extends StatelessWidget {
             OutlinedButton(
               onPressed: () {},
               child: const Row(
-                children: [
-                  Icon(Icons.remove),
-                  Text('  1  '),
-                  Icon(Icons.add),
-                ],
+                mainAxisSize: MainAxisSize.min,
+                children: [Icon(Icons.remove), Text('  1  '), Icon(Icons.add)],
               ),
             ),
             const SizedBox(width: 12),

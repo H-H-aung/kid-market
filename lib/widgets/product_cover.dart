@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:jojo/constants/colors.dart';
 import 'package:jojo/models/product.dart';
@@ -10,66 +11,102 @@ class ProductCover extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     height: large ? 270 : null,
+    clipBehavior: Clip.antiAlias,
     decoration: BoxDecoration(
-      color: product.color,
-      borderRadius: BorderRadius.circular(large ? 22 : 13),
-    ),
-    child: Center(
-      child: Container(
-        width: large ? 155 : 75,
-        height: large ? 205 : 92,
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: .10),
-              blurRadius: 9,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: large ? 82 : 43,
-              height: large ? 82 : 43,
-              decoration: const BoxDecoration(
-                color: Color(0xFFEAF5FF),
-                shape: BoxShape.circle,
-              ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Icon(product.icon, color: blue, size: large ? 54 : 28),
-                  Positioned(
-                    right: large ? 7 : 3,
-                    top: large ? 6 : 3,
-                    child: Icon(
-                      Icons.star_rounded,
-                      color: const Color(0xFFFFB703),
-                      size: large ? 20 : 11,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: large ? 13 : 6),
-            Text(
-              product.title.toUpperCase(),
-              maxLines: 2,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: large ? 12 : 6.5,
-                fontWeight: FontWeight.w900,
-                color: ink,
-              ),
-            ),
-          ],
-        ),
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color.lerp(product.color, Colors.white, .35)!, product.color],
       ),
+      borderRadius: BorderRadius.circular(large ? 26 : 18),
+    ),
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        final size = math.min(constraints.maxWidth, constraints.maxHeight);
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned(
+              right: -size * .2,
+              top: -size * .2,
+              child: Container(
+                width: size,
+                height: size,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: .25),
+                ),
+              ),
+            ),
+            Positioned(
+              left: size * .08,
+              bottom: size * .12,
+              child: Icon(
+                Icons.auto_awesome,
+                size: size * .15,
+                color: Colors.white.withValues(alpha: .85),
+              ),
+            ),
+            Transform.rotate(
+              angle: -.10,
+              child: Container(
+                width: size * .57,
+                height: size * .73,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(size * .07),
+                  boxShadow: [
+                    BoxShadow(
+                      color: ink.withValues(alpha: .13),
+                      blurRadius: 16,
+                      offset: const Offset(5, 10),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: size * .035,
+                      decoration: BoxDecoration(
+                        color: blue.withValues(alpha: .15),
+                        borderRadius: BorderRadius.horizontal(
+                          left: Radius.circular(size * .07),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(product.icon, color: blue, size: size * .30),
+                          SizedBox(height: size * .07),
+                          Container(
+                            width: size * .28,
+                            height: size * .025,
+                            decoration: BoxDecoration(
+                              color: product.color,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                          SizedBox(height: size * .035),
+                          Container(
+                            width: size * .18,
+                            height: size * .025,
+                            decoration: BoxDecoration(
+                              color: product.color,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     ),
   );
 }
