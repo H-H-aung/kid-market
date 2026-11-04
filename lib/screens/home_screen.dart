@@ -19,7 +19,20 @@ class HomeScreen extends StatelessWidget {
       const SliverToBoxAdapter(child: SearchBox()),
       const SliverToBoxAdapter(child: LearningBanner()),
       const SliverToBoxAdapter(child: SectionHeader('Categories')),
-      const SliverToBoxAdapter(child: CategoryRow()),
+      SliverToBoxAdapter(
+        child: CategoryRow(
+          onSelected: (category) => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ProductListScreen(
+                title: category.title,
+                categoryId: category.id,
+                onAdd: onAdd,
+              ),
+            ),
+          ),
+        ),
+      ),
       SliverToBoxAdapter(
         child: SectionHeader(
           'Popular finds',

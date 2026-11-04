@@ -2,111 +2,104 @@ import 'package:flutter/material.dart';
 import 'package:jojo/constants/colors.dart';
 import 'package:jojo/data/app_data.dart';
 import 'package:jojo/models/category.dart';
+import 'package:jojo/models/product.dart';
 
 class CategoryRow extends StatelessWidget {
-  const CategoryRow({super.key});
+  final List<Category> items;
+  final List<Product> productItems;
+  final ValueChanged<Category> onSelected;
+  const CategoryRow({
+    super.key,
+    this.items = categories,
+    this.productItems = products,
+    required this.onSelected,
+  });
 
   @override
-  Widget build(BuildContext context) => SizedBox(
-    height: 88,
-    child: ListView.separated(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      scrollDirection: Axis.horizontal,
-      itemCount: 4,
-      separatorBuilder: (_, _) => const SizedBox(width: 14),
-      itemBuilder: (_, i) => SizedBox(
-        width: 58,
-        child: Column(
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16),
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        final columns = constraints.maxWidth >= 280 ? 2 : 1;
+        final width = (constraints.maxWidth - (columns - 1) * 12) / columns;
+        return Wrap(
+          spacing: 12,
+          runSpacing: 12,
           children: [
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                color: categories[i].color,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Center(
-                child: Container(
-                  width: 34,
-                  height: 34,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: .84),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(categories[i].icon, size: 21, color: blue),
+            for (final item in items)
+              SizedBox(
+                width: width,
+                child: CategoryTile(
+                  item: item,
+                  productCount: productItems
+                      .where((p) => p.categoryId == item.id)
+                      .length,
+                  onTap: () => onSelected(item),
                 ),
               ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              categories[i].short,
-              maxLines: 1,
-              style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w700),
-            ),
           ],
-        ),
-      ),
+        );
+      },
     ),
   );
 }
 
 class CategoryTile extends StatelessWidget {
   final Category item;
+  final int productCount;
   final VoidCallback onTap;
-  const CategoryTile({super.key, required this.item, required this.onTap});
+  const CategoryTile({
+    super.key,
+    required this.item,
+    required this.productCount,
+    required this.onTap,
+  });
 
   @override
-  Widget build(BuildContext context) => InkWell(
-    onTap: onTap,
-    borderRadius: BorderRadius.circular(18),
-    child: Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE4ECF4)),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF4A789D).withValues(alpha: .06),
-            blurRadius: 15,
-            offset: const Offset(0, 7),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 58,
-            height: 58,
-            decoration: BoxDecoration(
-              color: item.color,
-              borderRadius: BorderRadius.circular(17),
-            ),
-            child: Center(
-              child: Container(
-                width: 38,
-                height: 38,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: .84),
-                  shape: BoxShape.circle,
+  Widget build(BuildContext context) => Material(
+    color: Color.lerp(item.color, Colors.white, .55),
+    borderRadius: BorderRadius.circular(24),
+    clipBehavior: Clip.antiAlias,
+    child: InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: item.color,
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: Icon(item.icon, size: 30, color: ink),
                 ),
-                child: Icon(item.icon, color: blue, size: 24),
+                const Spacer(),
+                const Icon(Icons.arrow_outward_rounded, size: 18, color: muted),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              item.short,
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
+                color: ink,
               ),
             ),
-          ),
-          const Spacer(),
-          Text(
-            item.title,
-            maxLines: 2,
-            style: const TextStyle(fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: 3),
-          const Text(
-            '12 resources',
-            style: TextStyle(color: muted, fontSize: 10),
-          ),
-        ],
+            const SizedBox(height: 5),
+            Text(
+              productCount == 1
+                  ? '1 item to explore'
+                  : '$productCount items to explore',
+              style: const TextStyle(color: muted, fontSize: 11, height: 1.4),
+            ),
+          ],
+        ),
       ),
     ),
   );

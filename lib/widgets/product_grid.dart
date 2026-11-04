@@ -7,7 +7,8 @@ import 'package:jojo/widgets/product_card.dart';
 
 class ProductGrid extends StatelessWidget {
   final ValueChanged<Product> onAdd;
-  const ProductGrid({super.key, required this.onAdd});
+  final List<Product> items;
+  const ProductGrid({super.key, required this.onAdd, this.items = products});
 
   @override
   Widget build(BuildContext context) => SliverLayoutBuilder(
@@ -23,17 +24,17 @@ class ProductGrid extends StatelessWidget {
         ),
         delegate: SliverChildBuilderDelegate(
           (context, i) => ProductCard(
-            product: products[i],
+            product: items[i],
             onAdd: onAdd,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (_) =>
-                    ProductDetailsScreen(product: products[i], onAdd: onAdd),
+                    ProductDetailsScreen(product: items[i], onAdd: onAdd),
               ),
             ),
           ),
-          childCount: products.length,
+          childCount: items.length,
         ),
       );
     },
