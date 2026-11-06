@@ -3,12 +3,17 @@ import 'package:kids_mart/data/app_store.dart';
 import 'package:kids_mart/widgets/empty_state.dart';
 
 class OrdersScreen extends StatelessWidget {
-  const OrdersScreen({super.key});
+  final String? orderId;
+  const OrdersScreen({super.key, this.orderId});
   @override
   Widget build(BuildContext context) {
-    final orders = AppScope.of(context).orders;
+    final orders = AppScope.of(
+      context,
+    ).orders.where((order) => orderId == null || order.id == orderId).toList();
     return Scaffold(
-      appBar: AppBar(title: const Text('My Orders')),
+      appBar: AppBar(
+        title: Text(orderId == null ? 'My Orders' : 'Order details'),
+      ),
       body: orders.isEmpty
           ? const Padding(
               padding: EdgeInsets.all(24),
@@ -26,6 +31,8 @@ class OrdersScreen extends StatelessWidget {
                 final order = orders[index];
                 return Card(
                   child: ExpansionTile(
+                    key: PageStorageKey(order.id),
+                    initiallyExpanded: orderId != null,
                     tilePadding: const EdgeInsets.all(16),
                     childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
                     title: Text(

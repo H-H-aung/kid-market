@@ -1,6 +1,6 @@
 # Kids Mart
 
-A Flutter learning-products app with four categories, search, favourites, a quantity-aware cart, saved addresses, profile editing and order history.
+A Flutter learning-products app with four categories, search, favourites, a quantity-aware cart, saved addresses, profile editing, order history and a notification inbox.
 
 ## Run
 
@@ -19,6 +19,8 @@ flutter run
 6. The order appears in My Orders, including its saved quantities, prices and delivery address. The cart clears only after the save succeeds.
 
 Profile, addresses, cart, favourites and orders persist on the current device using shared preferences. Changes are serialized; failed saves restore the previous state. Removing an address later does not change addresses on existing orders.
+
+The header bell opens Notifications. Saved orders appear there automatically; tapping one opens that order's details. Unread badges, All/Unread filters and Mark all as read reflect saved read status, including after restarting the app. These are in-app updates, not background push notifications.
 
 ## Current scope
 

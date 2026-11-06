@@ -81,6 +81,19 @@ class SavedOrder {
   );
 }
 
+class AppNotification {
+  final String id, orderId;
+  final DateTime createdAt;
+  const AppNotification({
+    required this.id,
+    required this.orderId,
+    required this.createdAt,
+  });
+  String get title => 'Order saved';
+  String get message =>
+      'Your order $orderId was saved on this device. No payment was collected.';
+}
+
 class AppStore extends ChangeNotifier {
   static const storageKey = 'kids_mart.account.v1';
   final Future<bool> Function(String)? _persist;
@@ -90,6 +103,7 @@ class AppStore extends ChangeNotifier {
   final Set<String> _wishlist = {};
   final List<SavedAddress> _addresses = [];
   final List<SavedOrder> _orders = [];
+  final Set<String> _readNotificationIds = {};
   String? _defaultAddressId;
   Future<void> _pending = Future<void>.value();
 
@@ -116,6 +130,18 @@ class AppStore extends ChangeNotifier {
       catalog.where((p) => _wishlist.contains(p.id)).toList();
   List<SavedAddress> get addresses => List.unmodifiable(_addresses);
   List<SavedOrder> get orders => List.unmodifiable(_orders);
+  List<AppNotification> get notifications => _orders
+      .map(
+        (order) => AppNotification(
+          id: 'order:${order.id}',
+          orderId: order.id,
+          createdAt: order.createdAt,
+        ),
+      )
+      .toList(growable: false);
+  bool isNotificationRead(String id) => _readNotificationIds.contains(id);
+  int get unreadNotificationCount =>
+      notifications.where((item) => !isNotificationRead(item.id)).length;
   SavedAddress? get defaultAddress =>
       _addresses.where((a) => a.id == _defaultAddressId).firstOrNull;
   int get cartCount => _cart.values.fold(0, (sum, count) => sum + count);
@@ -133,8 +159,12 @@ class AppStore extends ChangeNotifier {
     'addresses': _addresses.map((a) => a.toJson()).toList(),
     'defaultAddressId': _defaultAddressId,
     'orders': _orders.map((o) => o.toJson()).toList(),
+    'readNotificationIds': _readNotificationIds.toList(),
   };
   void _restore(Map<String, dynamic> j) {
+    _readNotificationIds
+      ..clear()
+      ..addAll((j['readNotificationIds'] as List? ?? []).cast<String>());
     _name = j['name'] as String? ?? '';
     _email = j['email'] as String? ?? '';
     _cart.clear();
@@ -192,6 +222,15 @@ class AppStore extends ChangeNotifier {
     }
     _name = name.trim();
     _email = email.trim();
+  });
+  Future<void> markNotificationRead(String id) => _change(() {
+    if (!notifications.any((item) => item.id == id)) {
+      throw ArgumentError('Notification not found');
+    }
+    _readNotificationIds.add(id);
+  });
+  Future<void> markAllNotificationsRead() => _change(() {
+    _readNotificationIds.addAll(notifications.map((item) => item.id));
   });
   Future<void> addToCart(Product product, {int quantity = 1}) => _change(() {
     if (!catalog.any((p) => p.id == product.id) || quantity < 1) {
