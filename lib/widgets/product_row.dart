@@ -21,9 +21,6 @@ class ProductRow extends StatelessWidget {
   Widget build(BuildContext context) => InkWell(
     onTap: onTap,
     child: Container(
-      // The compact illustration is 92 px tall; with the card padding, 105
-      // px left the layout 2 px short on the product-list screen.
-      height: 110,
       padding: const EdgeInsets.all(9),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -32,10 +29,15 @@ class ProductRow extends StatelessWidget {
       ),
       child: Row(
         children: [
-          SizedBox(width: 80, child: ProductCover(product: product)),
+          SizedBox(
+            width: 72,
+            height: 92,
+            child: ProductCover(product: product),
+          ),
           const SizedBox(width: 11),
           Expanded(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

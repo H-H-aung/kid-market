@@ -5,6 +5,8 @@ import 'package:kids_mart/models/product.dart';
 import 'package:kids_mart/widgets/category_widgets.dart';
 import 'package:kids_mart/widgets/home_header.dart';
 import 'package:kids_mart/widgets/product_grid.dart';
+import 'package:kids_mart/widgets/search_box.dart';
+import 'package:kids_mart/widgets/empty_state.dart';
 
 class ExploreScreen extends StatefulWidget {
   final ValueChanged<Product> onAdd;
@@ -16,6 +18,7 @@ class ExploreScreen extends StatefulWidget {
 
 class _ExploreScreenState extends State<ExploreScreen> {
   String? _categoryId;
+  String _query = '';
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +27,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
         .firstOrNull;
     final items = products
         .where(
-          (product) => _categoryId == null || product.categoryId == _categoryId,
+          (product) =>
+              (_categoryId == null || product.categoryId == _categoryId) &&
+              (product.title.toLowerCase().contains(_query) ||
+                  product.categoryId.contains(_query)),
         )
         .toList();
     return CustomScrollView(
@@ -58,6 +64,12 @@ class _ExploreScreenState extends State<ExploreScreen> {
           child: CategoryRow(
             selectedId: _categoryId,
             onSelected: (category) => setState(() => _categoryId = category.id),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: SearchBox(
+            onChanged: (value) =>
+                setState(() => _query = value.trim().toLowerCase()),
           ),
         ),
         SliverToBoxAdapter(
@@ -95,10 +107,23 @@ class _ExploreScreenState extends State<ExploreScreen> {
             ),
           ),
         ),
-        SliverPadding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 140),
-          sliver: ProductGrid(onAdd: widget.onAdd, items: items),
-        ),
+        if (items.isEmpty)
+          const SliverFillRemaining(
+            hasScrollBody: false,
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: EmptyState(
+                Icons.search_off_rounded,
+                'No products found',
+                'Try another name or category.',
+              ),
+            ),
+          )
+        else
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 140),
+            sliver: ProductGrid(onAdd: widget.onAdd, items: items),
+          ),
       ],
     );
   }

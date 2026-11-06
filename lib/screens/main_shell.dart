@@ -5,6 +5,7 @@ import 'package:kids_mart/screens/explore_screen.dart';
 import 'package:kids_mart/screens/home_screen.dart';
 import 'package:kids_mart/screens/profile_screen.dart';
 import 'package:kids_mart/widgets/glass_nav.dart';
+import 'package:kids_mart/data/app_store.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -15,15 +16,13 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int index = 0;
-  final cart = <Product>[];
 
   void _addToCart(Product product) {
-    setState(() => cart.add(product));
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(content: Text('${product.title} added to cart')),
-      );
+    saveAction(
+      context,
+      () => AppScope.of(context).addToCart(product),
+      success: '${product.title} added to cart',
+    );
   }
 
   @override
@@ -31,11 +30,7 @@ class _MainShellState extends State<MainShell> {
     final pages = [
       HomeScreen(onAdd: _addToCart),
       ExploreScreen(onAdd: _addToCart),
-      CartScreen(
-        items: cart,
-        onRemove: (i) => setState(() => cart.removeAt(i)),
-        onContinueShopping: () => setState(() => index = 0),
-      ),
+      CartScreen(onContinueShopping: () => setState(() => index = 0)),
       const ProfileScreen(),
     ];
 
@@ -47,7 +42,7 @@ class _MainShellState extends State<MainShell> {
       ),
       bottomNavigationBar: GlassNav(
         index: index,
-        cartCount: cart.length,
+        cartCount: AppScope.of(context).cartCount,
         onTap: (value) => setState(() => index = value),
       ),
     );

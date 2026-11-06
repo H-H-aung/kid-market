@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kids_mart/constants/colors.dart';
 import 'package:kids_mart/models/product.dart';
 import 'package:kids_mart/widgets/product_cover.dart';
+import 'package:kids_mart/widgets/favourite_button.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
@@ -27,9 +28,19 @@ class ProductCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: SizedBox(
-                width: double.infinity,
-                child: ProductCover(product: product),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: ProductCover(product: product),
+                  ),
+                  Positioned(
+                    top: 2,
+                    right: 2,
+                    child: FavouriteButton(product: product),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 12),

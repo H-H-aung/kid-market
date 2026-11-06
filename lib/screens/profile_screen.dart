@@ -5,6 +5,8 @@ import 'package:kids_mart/screens/wishlist_screen.dart';
 import 'package:kids_mart/widgets/home_header.dart';
 import 'package:kids_mart/widgets/kid_avatar.dart';
 import 'package:kids_mart/widgets/profile_tile.dart';
+import 'package:kids_mart/data/app_store.dart';
+import 'package:kids_mart/screens/addresses_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -14,11 +16,14 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String _name = 'Little Explorer';
-  String _email = 'little.explorer@email.com';
+  String get _name => AppScope.of(context).name.isEmpty
+      ? 'Welcome, Explorer'
+      : AppScope.of(context).name;
+  String get _email => AppScope.of(context).email;
+  bool _saving = false;
 
   Future<void> _editProfile() async {
-    var nextName = _name;
+    var nextName = AppScope.of(context).name;
     var nextEmail = _email;
     final formKey = GlobalKey<FormState>();
     final result = await showModalBottomSheet<(String, String)>(
@@ -51,12 +56,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Demo profile · changes last for this session.',
+                  'Your details are saved on this device.',
                   style: TextStyle(color: muted, height: 1.4),
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
-                  initialValue: _name,
+                  initialValue: AppScope.of(context).name,
                   onChanged: (value) => nextName = value,
                   textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.next,
@@ -107,10 +112,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
     if (mounted && result != null) {
-      setState(() {
-        _name = result.$1;
-        _email = result.$2;
-      });
+      setState(() => _saving = true);
+      await saveAction(
+        context,
+        () => AppScope.of(context).saveProfile(result.$1, result.$2),
+        success: 'Profile saved',
+      );
+      if (mounted) setState(() => _saving = false);
     }
   }
 
@@ -148,12 +156,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               SizedBox(height: 20),
               Text(
-                'Trying the demo',
+                'Your saved data',
                 style: TextStyle(fontWeight: FontWeight.w700, color: ink),
               ),
               SizedBox(height: 6),
               Text(
-                'Products and orders are samples. No payments are collected, and profile edits last for this session.',
+                'Your profile, addresses, cart and favourites are saved on this device. Checkout records an order locally; it does not send it to a shop or collect payment.',
                 style: TextStyle(color: muted, height: 1.5),
               ),
             ],
@@ -229,7 +237,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    _email,
+                    _email.isEmpty ? 'Add your name and email' : _email,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 12,
@@ -239,7 +247,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 12),
                   TextButton.icon(
-                    onPressed: _editProfile,
+                    onPressed: _saving ? null : _editProfile,
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.white.withValues(alpha: .85),
                       padding: const EdgeInsets.symmetric(
@@ -305,11 +313,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            const ProfileTile(
+            ProfileTile(
               Icons.location_on_outlined,
               'Saved addresses',
-              Color(0xFFE5F3ED),
-              subtitle: 'Coming soon',
+              const Color(0xFFE5F3ED),
+              subtitle:
+                  '${AppScope.of(context).addresses.length} saved addresses',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AddressesScreen()),
+              ),
             ),
             ProfileTile(
               Icons.help_outline_rounded,
@@ -334,7 +347,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 children: const [
                   Text(
-                    'Discover books, courses, toys and flashcards for joyful learning. This is a demo experience.',
+                    'Discover books, courses, toys and flashcards for joyful learning. Your account details and saved items stay on this device.',
                   ),
                 ],
               ),

@@ -42,6 +42,7 @@ const products = [
     Icons.auto_stories_rounded,
     Color(0xFFFFE7A8),
     categoryId: 'books',
+    id: 'good-night-stories',
   ),
   Product(
     'Building Blocks Set',
@@ -50,6 +51,7 @@ const products = [
     Icons.toys_rounded,
     Color(0xFFD1F4E8),
     categoryId: 'toys',
+    id: 'building-blocks-set',
   ),
   Product(
     'Dinosaur World Book',
@@ -58,6 +60,7 @@ const products = [
     Icons.menu_book_rounded,
     Color(0xFFDCEEFF),
     categoryId: 'books',
+    id: 'dinosaur-world-book',
   ),
   Product(
     'ABC Learning Book',
@@ -66,6 +69,7 @@ const products = [
     Icons.spellcheck_rounded,
     Color(0xFFFFDAE1),
     categoryId: 'books',
+    id: 'abc-learning-book',
   ),
   Product(
     'Math Adventures',
@@ -74,6 +78,7 @@ const products = [
     Icons.calculate_rounded,
     Color(0xFFDCEEFF),
     categoryId: 'courses',
+    id: 'math-adventures',
   ),
   Product(
     'First Words Flashcards',
@@ -82,6 +87,7 @@ const products = [
     Icons.style_rounded,
     Color(0xFFD1F4E8),
     categoryId: 'flashcards',
+    id: 'first-words-flashcards',
   ),
 ];
 

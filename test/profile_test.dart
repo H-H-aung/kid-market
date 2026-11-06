@@ -3,23 +3,29 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kids_mart/screens/orders_screen.dart';
 import 'package:kids_mart/screens/profile_screen.dart';
 import 'package:kids_mart/screens/wishlist_screen.dart';
+import 'package:kids_mart/data/app_store.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> openProfile(WidgetTester tester, {double scale = 1}) async {
   await tester.pumpWidget(
-    MaterialApp(
-      theme: ThemeData(useMaterial3: true),
-      builder: (context, child) => MediaQuery(
-        data: MediaQuery.of(
-          context,
-        ).copyWith(textScaler: TextScaler.linear(scale)),
-        child: child!,
+    AppScope(
+      store: AppStore(preferences: await SharedPreferences.getInstance()),
+      child: MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(scale)),
+          child: child!,
+        ),
+        home: const Scaffold(body: ProfileScreen()),
       ),
-      home: const Scaffold(body: ProfileScreen()),
     ),
   );
 }
 
 void main() {
+  setUp(() => SharedPreferences.setMockInitialValues({}));
   for (final width in [320.0, 390.0]) {
     testWidgets('Profile scrolls without overflow at $width with larger text', (
       tester,
@@ -29,7 +35,7 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       await openProfile(tester, scale: 1.5);
-      expect(find.text('Little Explorer'), findsOneWidget);
+      expect(find.text('Welcome, Explorer'), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.scrollUntilVisible(find.text('About Kids Mart'), 200);
       await tester.pumpAndSettle();
@@ -52,7 +58,7 @@ void main() {
     });
   }
 
-  testWidgets('Demo edit validates fields and updates the profile', (
+  testWidgets('Profile edit validates fields and persists the profile', (
     tester,
   ) async {
     await openProfile(tester);
@@ -71,6 +77,10 @@ void main() {
     await tester.ensureVisible(find.text('Save changes'));
     await tester.tap(find.text('Save changes'));
     await tester.pumpAndSettle();
+    expect(find.text('Happy Explorer'), findsOneWidget);
+    expect(find.text('explorer@example.com'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await openProfile(tester);
     expect(find.text('Happy Explorer'), findsOneWidget);
     expect(find.text('explorer@example.com'), findsOneWidget);
     expect(tester.takeException(), isNull);
