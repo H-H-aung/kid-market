@@ -7,7 +7,7 @@ class LearningBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    height: 150,
+    height: 170,
     margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
     padding: const EdgeInsets.fromLTRB(18, 18, 8, 14),
     decoration: BoxDecoration(
