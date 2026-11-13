@@ -8,6 +8,14 @@ class ProductCover extends StatelessWidget {
   final bool large;
   const ProductCover({super.key, required this.product, this.large = false});
 
+  String? get _photoAsset => switch (product.categoryId) {
+    'books' => 'assets/products/books.png',
+    'courses' => 'assets/products/courses.png',
+    'toys' => 'assets/products/toys.png',
+    'flashcards' => 'assets/products/flashcards.png',
+    _ => null,
+  };
+
   @override
   Widget build(BuildContext context) => Container(
     height: large ? 270 : null,
@@ -23,6 +31,31 @@ class ProductCover extends StatelessWidget {
     child: LayoutBuilder(
       builder: (context, constraints) {
         final size = math.min(constraints.maxWidth, constraints.maxHeight);
+        final photoAsset = _photoAsset;
+        if (photoAsset != null) {
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.asset(
+                photoAsset,
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.medium,
+                errorBuilder: (_, _, _) => Center(
+                  child: Icon(product.icon, color: blue, size: size * .35),
+                ),
+              ),
+              const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Color(0x1A21314A)],
+                  ),
+                ),
+              ),
+            ],
+          );
+        }
         return Stack(
           alignment: Alignment.center,
           children: [

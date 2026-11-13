@@ -287,8 +287,12 @@ class AppStore extends ChangeNotifier {
       final address = defaultAddress;
       if (address == null) throw StateError('Add a delivery address first');
       final now = DateTime.now();
+      var orderSerial = now.microsecondsSinceEpoch;
+      while (_orders.any((item) => item.id == 'KM-$orderSerial')) {
+        orderSerial++;
+      }
       order = SavedOrder(
-        id: 'KM-${now.microsecondsSinceEpoch}',
+        id: 'KM-$orderSerial',
         createdAt: now,
         address: address,
         lines: cartProducts
