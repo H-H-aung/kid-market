@@ -121,19 +121,8 @@ class _SplashScreenState extends State<SplashScreen> {
                                   height: 1.5,
                                 ),
                               ),
-                              SizedBox(height: compact ? 24 : 42),
-                              const ExcludeSemantics(
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    _Dot(blue),
-                                    SizedBox(width: 7),
-                                    _Dot(Color(0xFFFFB650)),
-                                    SizedBox(width: 7),
-                                    _Dot(Color(0xFF62CDB3)),
-                                  ],
-                                ),
-                              ),
+                              SizedBox(height: compact ? 20 : 34),
+                              const _LoadingStatus(),
                             ],
                           ),
                         ),
@@ -321,13 +310,48 @@ class _SoftCircle extends StatelessWidget {
   );
 }
 
-class _Dot extends StatelessWidget {
-  final Color color;
-  const _Dot(this.color);
+class _LoadingStatus extends StatelessWidget {
+  const _LoadingStatus();
+
   @override
-  Widget build(BuildContext context) => Container(
-    width: 6,
-    height: 6,
-    decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-  );
+  Widget build(BuildContext context) {
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
+    return Semantics(
+      label: 'Getting things ready',
+      value: 'Loading',
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 150,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: TweenAnimationBuilder<double>(
+                tween: Tween(begin: reduceMotion ? .72 : .08, end: .92),
+                duration: Duration(milliseconds: reduceMotion ? 0 : 1050),
+                curve: Curves.easeOutCubic,
+                builder: (context, value, _) => LinearProgressIndicator(
+                  value: value,
+                  minHeight: 6,
+                  backgroundColor: Colors.white.withValues(alpha: .8),
+                  color: blue,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            'Getting things ready...',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: muted,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              letterSpacing: .2,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

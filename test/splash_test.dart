@@ -29,6 +29,8 @@ void main() {
       await tester.pump(const Duration(milliseconds: 700));
       expect(find.text('Kids'), findsOneWidget);
       expect(find.text('Mart'), findsOneWidget);
+      expect(find.text('Getting things ready...'), findsOneWidget);
+      expect(find.byType(LinearProgressIndicator), findsOneWidget);
       expect(find.text('Learn · Play · Grow'), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());
