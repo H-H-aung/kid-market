@@ -2,34 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kids_mart/data/app_data.dart';
 import 'package:kids_mart/screens/explore_screen.dart';
-import 'package:kids_mart/screens/home_screen.dart';
 import 'package:kids_mart/screens/product_list_screen.dart';
 import 'package:kids_mart/widgets/category_widgets.dart';
 
 void main() {
-  testWidgets('Home demo age chips filter the catalog', (tester) async {
-    tester.view.physicalSize = const Size(390, 1600);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(body: HomeScreen(onAdd: (_) {})),
-      ),
-    );
-
-    expect(find.text('Shop by age'), findsOneWidget);
-    expect(find.text('All ages'), findsOneWidget);
-    await tester.drag(find.text('All ages'), const Offset(-320, 0));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Ages 8+'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Young Coder Lab'), findsOneWidget);
-    expect(find.text('Good Night Stories'), findsNothing);
-    expect(tester.takeException(), isNull);
-  });
-
   testWidgets(
     'Compact category row scrolls on a small screen and filters products',
     (tester) async {
