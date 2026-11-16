@@ -3,7 +3,6 @@ import 'package:kids_mart/constants/colors.dart';
 import 'package:kids_mart/screens/orders_screen.dart';
 import 'package:kids_mart/screens/wishlist_screen.dart';
 import 'package:kids_mart/widgets/home_header.dart';
-import 'package:kids_mart/widgets/kid_avatar.dart';
 import 'package:kids_mart/widgets/profile_tile.dart';
 import 'package:kids_mart/data/app_store.dart';
 import 'package:kids_mart/screens/addresses_screen.dart';
@@ -20,6 +19,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ? 'Welcome, Explorer'
       : AppScope.of(context).name;
   String get _email => AppScope.of(context).email;
+  bool get _profileReady =>
+      AppScope.of(context).name.isNotEmpty && _email.isNotEmpty;
+  String get _initial => AppScope.of(context).name.isEmpty
+      ? ''
+      : AppScope.of(context).name.trimLeft()[0].toUpperCase();
   bool _saving = false;
 
   Future<void> _editProfile() async {
@@ -195,71 +199,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               style: TextStyle(fontSize: 13, color: muted),
             ),
             const SizedBox(height: 22),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFFE6F2FF),
-                    Color(0xFFF0EBFF),
-                    Color(0xFFFFF4DF),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(28),
-                border: Border.all(color: Colors.white, width: 2),
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: .8),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const CircleAvatar(
-                      radius: 40,
-                      backgroundColor: Color(0xFFD1E8FF),
-                      child: KidAvatar(size: 74),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  Text(
-                    _name,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      color: ink,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    _email.isEmpty ? 'Add your name and email' : _email,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: muted,
-                      height: 1.4,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextButton.icon(
-                    onPressed: _saving ? null : _editProfile,
-                    style: TextButton.styleFrom(
-                      backgroundColor: Colors.white.withValues(alpha: .85),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 18,
-                        vertical: 10,
-                      ),
-                    ),
-                    icon: const Icon(Icons.edit_outlined, size: 16),
-                    label: const Text('Edit profile'),
-                  ),
-                ],
-              ),
+            _ProfileCard(
+              name: _name,
+              email: _email,
+              initial: _initial,
+              ready: _profileReady,
+              saving: _saving,
+              orderCount: AppScope.of(context).orders.length,
+              wishlistCount: AppScope.of(context).wishlistProducts.length,
+              addressCount: AppScope.of(context).addresses.length,
+              onEdit: _editProfile,
             ),
             const SizedBox(height: 22),
             LayoutBuilder(
@@ -274,7 +223,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: _ProfileShortcut(
                         icon: Icons.shopping_bag_outlined,
                         title: 'My Orders',
-                        subtitle: 'Track your orders',
+                        subtitle:
+                            '${AppScope.of(context).orders.length} local orders',
                         color: const Color(0xFFDCEEFF),
                         onTap: () => Navigator.push(
                           context,
@@ -289,7 +239,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: _ProfileShortcut(
                         icon: Icons.favorite_border_rounded,
                         title: 'My Wishlist',
-                        subtitle: 'Your favourite finds',
+                        subtitle:
+                            '${AppScope.of(context).wishlistProducts.length} saved items',
                         color: const Color(0xFFFFE3EC),
                         onTap: () => Navigator.push(
                           context,
@@ -364,6 +315,254 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     ],
+  );
+}
+
+class _ProfileCard extends StatelessWidget {
+  final String name, email, initial;
+  final bool ready, saving;
+  final int orderCount, wishlistCount, addressCount;
+  final VoidCallback onEdit;
+
+  const _ProfileCard({
+    required this.name,
+    required this.email,
+    required this.initial,
+    required this.ready,
+    required this.saving,
+    required this.orderCount,
+    required this.wishlistCount,
+    required this.addressCount,
+    required this.onEdit,
+  });
+
+  @override
+  Widget build(BuildContext context) => Container(
+    width: double.infinity,
+    clipBehavior: Clip.antiAlias,
+    decoration: BoxDecoration(
+      gradient: const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0xFF1688F8), Color(0xFF6378EA)],
+      ),
+      borderRadius: BorderRadius.circular(28),
+      boxShadow: [
+        BoxShadow(
+          color: blue.withValues(alpha: .18),
+          blurRadius: 24,
+          offset: const Offset(0, 12),
+        ),
+      ],
+    ),
+    child: Stack(
+      children: [
+        const Positioned(
+          right: -42,
+          top: -55,
+          child: _ProfileBubble(size: 150, color: Color(0x33FFFFFF)),
+        ),
+        const Positioned(
+          left: -30,
+          bottom: -65,
+          child: _ProfileBubble(size: 120, color: Color(0x1FFFFFFF)),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 64,
+                    height: 64,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: .96),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 3),
+                    ),
+                    child: initial.isEmpty
+                        ? const Icon(
+                            Icons.person_rounded,
+                            color: blue,
+                            size: 34,
+                          )
+                        : Text(
+                            initial,
+                            style: const TextStyle(
+                              color: blue,
+                              fontSize: 28,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          email.isEmpty ? 'Add your name and email' : email,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 9),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 9,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: .16),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                ready
+                                    ? Icons.verified_rounded
+                                    : Icons.info_rounded,
+                                color: const Color(0xFFFFD166),
+                                size: 14,
+                              ),
+                              const SizedBox(width: 5),
+                              Flexible(
+                                child: Text(
+                                  ready ? 'Profile ready' : 'Complete profile',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: saving ? null : onEdit,
+                    tooltip: 'Edit profile',
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.white.withValues(alpha: .17),
+                      foregroundColor: Colors.white,
+                      disabledForegroundColor: Colors.white54,
+                    ),
+                    icon: saving
+                        ? const SizedBox.square(
+                            dimension: 17,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Icon(Icons.edit_rounded, size: 19),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: .13),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: Colors.white24),
+                ),
+                child: Row(
+                  children: [
+                    _ProfileStat(value: orderCount, label: 'Orders'),
+                    const _ProfileDivider(),
+                    _ProfileStat(value: wishlistCount, label: 'Wishlist'),
+                    const _ProfileDivider(),
+                    _ProfileStat(value: addressCount, label: 'Addresses'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+class _ProfileStat extends StatelessWidget {
+  final int value;
+  final String label;
+
+  const _ProfileStat({required this.value, required this.label});
+
+  @override
+  Widget build(BuildContext context) => Expanded(
+    child: Column(
+      children: [
+        Text(
+          '$value',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 19,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        const SizedBox(height: 3),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+class _ProfileDivider extends StatelessWidget {
+  const _ProfileDivider();
+
+  @override
+  Widget build(BuildContext context) =>
+      Container(width: 1, height: 30, color: Colors.white24);
+}
+
+class _ProfileBubble extends StatelessWidget {
+  final double size;
+  final Color color;
+
+  const _ProfileBubble({required this.size, required this.color});
+
+  @override
+  Widget build(BuildContext context) => Container(
+    width: size,
+    height: size,
+    decoration: BoxDecoration(color: color, shape: BoxShape.circle),
   );
 }
 

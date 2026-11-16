@@ -36,6 +36,8 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
       await openProfile(tester, scale: 1.5);
       expect(find.text('Welcome, Explorer'), findsOneWidget);
+      expect(find.text('Complete profile'), findsOneWidget);
+      expect(find.byType(Image), findsNothing);
       expect(tester.takeException(), isNull);
       await tester.scrollUntilVisible(find.text('About Kids Mart'), 200);
       await tester.pumpAndSettle();
@@ -62,7 +64,7 @@ void main() {
     tester,
   ) async {
     await openProfile(tester);
-    await tester.tap(find.text('Edit profile'));
+    await tester.tap(find.byTooltip('Edit profile'));
     await tester.pumpAndSettle();
     final fields = find.byType(TextFormField);
     await tester.enterText(fields.first, '');
