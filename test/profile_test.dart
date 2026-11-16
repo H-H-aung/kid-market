@@ -35,8 +35,11 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       await openProfile(tester, scale: 1.5);
-      expect(find.text('Welcome, Explorer'), findsOneWidget);
-      expect(find.text('Complete profile'), findsOneWidget);
+      expect(find.text('Guest shopping'), findsOneWidget);
+      expect(
+        find.text('No sign-in needed. Your details are requested at checkout.'),
+        findsOneWidget,
+      );
       expect(find.byType(Image), findsNothing);
       expect(tester.takeException(), isNull);
       await tester.scrollUntilVisible(find.text('About Kids Mart'), 200);
@@ -45,7 +48,7 @@ void main() {
     });
   }
 
-  for (final title in ['My Orders', 'My Wishlist']) {
+  for (final title in ['Order tracking', 'My Wishlist']) {
     testWidgets('$title shortcut opens its destination', (tester) async {
       await openProfile(tester);
       await tester.scrollUntilVisible(find.text(title), 150);
@@ -53,49 +56,35 @@ void main() {
       await tester.tap(find.text(title));
       await tester.pumpAndSettle();
       expect(
-        find.byType(title == 'My Orders' ? OrdersScreen : WishlistScreen),
+        find.byType(title == 'Order tracking' ? OrdersScreen : WishlistScreen),
         findsOneWidget,
       );
       expect(tester.takeException(), isNull);
     });
   }
 
-  testWidgets('Profile edit validates fields and persists the profile', (
+  testWidgets('Guest profile has no auth or personal-detail form', (
     tester,
   ) async {
     await openProfile(tester);
-    await tester.tap(find.byTooltip('Edit profile'));
-    await tester.pumpAndSettle();
-    final fields = find.byType(TextFormField);
-    await tester.enterText(fields.first, '');
-    await tester.enterText(fields.last, 'invalid-email');
-    await tester.ensureVisible(find.text('Save changes'));
-    await tester.tap(find.text('Save changes'));
-    await tester.pumpAndSettle();
-    expect(find.text('Enter your name'), findsOneWidget);
-    expect(find.text('Enter a valid email'), findsOneWidget);
-    await tester.enterText(fields.first, 'Happy Explorer');
-    await tester.enterText(fields.last, 'explorer@example.com');
-    await tester.ensureVisible(find.text('Save changes'));
-    await tester.tap(find.text('Save changes'));
-    await tester.pumpAndSettle();
-    expect(find.text('Happy Explorer'), findsOneWidget);
-    expect(find.text('explorer@example.com'), findsOneWidget);
-    await tester.pumpWidget(const SizedBox.shrink());
-    await openProfile(tester);
-    expect(find.text('Happy Explorer'), findsOneWidget);
-    expect(find.text('explorer@example.com'), findsOneWidget);
+    expect(find.byType(TextFormField), findsNothing);
+    expect(find.text('Edit profile'), findsNothing);
+    expect(
+      find.text('Your order number appears after checkout'),
+      findsOneWidget,
+    );
+    expect(find.text('Add them now or during checkout'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
   testWidgets('Help and about actions open useful content', (tester) async {
     await openProfile(tester);
-    await tester.scrollUntilVisible(find.text('Help & Support'), 200);
+    await tester.scrollUntilVisible(find.text('How it works'), 200);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Help & Support'));
+    await tester.tap(find.text('How it works'));
     await tester.pumpAndSettle();
-    expect(find.text('A little help'), findsOneWidget);
-    Navigator.of(tester.element(find.text('A little help'))).pop();
+    expect(find.text('Add details at checkout'), findsOneWidget);
+    Navigator.of(tester.element(find.text('Add details at checkout'))).pop();
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('About Kids Mart'));
     await tester.pumpAndSettle();
