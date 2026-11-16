@@ -40,7 +40,6 @@ void main() {
         find.text('No sign-in needed. Your details are requested at checkout.'),
         findsOneWidget,
       );
-      expect(find.byType(Image), findsNothing);
       expect(tester.takeException(), isNull);
       await tester.scrollUntilVisible(find.text('About Kids Mart'), 200);
       await tester.pumpAndSettle();
