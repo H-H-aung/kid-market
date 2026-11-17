@@ -40,30 +40,24 @@ class ProductCard extends StatelessWidget {
                         child: ProductCover(product: product),
                       ),
                       Positioned(
-                        top: 2,
-                        right: 2,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            FavouriteButton(product: product),
-                            const SizedBox(width: 6),
-                            IconButton.filled(
-                              onPressed: () => onAdd(product),
-                              tooltip: 'Add ${product.title} to cart',
-                              style: IconButton.styleFrom(
-                                backgroundColor: ink,
-                                foregroundColor: Colors.white,
-                                minimumSize: Size(
-                                  compact ? 40 : 44,
-                                  compact ? 40 : 44,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                              ),
-                              icon: const Icon(Icons.add_rounded, size: 21),
-                            ),
-                          ],
+                        top: 8,
+                        left: 8,
+                        child: FavouriteButton(product: product, compact: true),
+                      ),
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: IconButton.filled(
+                          onPressed: () => onAdd(product),
+                          tooltip: 'Add ${product.title} to cart',
+                          style: IconButton.styleFrom(
+                            backgroundColor: ink.withValues(alpha: .88),
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(36, 36),
+                            padding: EdgeInsets.zero,
+                            shape: const CircleBorder(),
+                          ),
+                          icon: const Icon(Icons.add_rounded, size: 19),
                         ),
                       ),
                     ],
