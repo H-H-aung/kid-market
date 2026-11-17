@@ -16,90 +16,105 @@ class ProductCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => Material(
-    color: Colors.white,
-    borderRadius: BorderRadius.circular(24),
-    clipBehavior: Clip.antiAlias,
-    child: InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: ProductCover(product: product),
-                  ),
-                  Positioned(
-                    top: 2,
-                    right: 2,
-                    child: FavouriteButton(product: product),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              product.age,
-              style: const TextStyle(
-                fontSize: 11,
-                color: muted,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 5),
-            SizedBox(
-              height: 40 * MediaQuery.textScalerOf(context).scale(1),
-              child: Text(
-                product.title,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 14,
-                  height: 1.3,
-                  color: ink,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final compact = constraints.maxWidth < 165;
+      final padding = compact ? 8.0 : 10.0;
+      return Material(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(compact ? 20 : 24),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: EdgeInsets.all(padding),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: ProductCover(product: product),
+                      ),
+                      Positioned(
+                        top: 2,
+                        right: 2,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            FavouriteButton(product: product),
+                            const SizedBox(width: 6),
+                            IconButton.filled(
+                              onPressed: () => onAdd(product),
+                              tooltip: 'Add ${product.title} to cart',
+                              style: IconButton.styleFrom(
+                                backgroundColor: ink,
+                                foregroundColor: Colors.white,
+                                minimumSize: Size(
+                                  compact ? 40 : 44,
+                                  compact ? 40 : 44,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                              ),
+                              icon: const Icon(Icons.add_rounded, size: 21),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: compact ? 8 : 12),
+                Text(
+                  product.age,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: muted,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                SizedBox(
+                  height: 40 * MediaQuery.textScalerOf(context).scale(1),
                   child: Text(
-                    '\$${product.price.toStringAsFixed(2)}',
-                    maxLines: 1,
+                    product.title,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
+                      fontSize: 14,
+                      height: 1.3,
                       color: ink,
-                      fontSize: 17,
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ),
-                IconButton.filled(
-                  onPressed: () => onAdd(product),
-                  tooltip: 'Add ${product.title} to cart',
-                  style: IconButton.styleFrom(
-                    backgroundColor: ink,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(44, 44),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+                SizedBox(height: compact ? 6 : 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '\$${product.price.toStringAsFixed(2)}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: ink,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
                     ),
-                  ),
-                  icon: const Icon(Icons.add_rounded, size: 21),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
-      ),
-    ),
+      );
+    },
   );
 }

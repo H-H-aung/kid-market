@@ -20,6 +20,9 @@ class ProductListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final horizontalPadding = (MediaQuery.sizeOf(context).width * .05)
+        .clamp(16.0, 36.0)
+        .toDouble();
     final visibleItems = categoryId == null
         ? items
         : items.where((item) => item.categoryId == categoryId).toList();
@@ -29,7 +32,12 @@ class ProductListScreen extends StatelessWidget {
         slivers: [
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding,
+                8,
+                horizontalPadding,
+                20,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -65,9 +73,9 @@ class ProductListScreen extends StatelessWidget {
           else
             SliverPadding(
               padding: EdgeInsets.fromLTRB(
-                16,
+                horizontalPadding,
                 0,
-                16,
+                horizontalPadding,
                 24 + MediaQuery.paddingOf(context).bottom,
               ),
               sliver: ProductGrid(onAdd: onAdd, items: visibleItems),

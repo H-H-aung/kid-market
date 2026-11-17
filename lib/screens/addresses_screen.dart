@@ -15,96 +15,101 @@ class AddressesScreen extends StatelessWidget {
       isScrollControlled: true,
       showDragHandle: true,
       builder: (sheetContext) => StatefulBuilder(
-        builder: (context, setSheetState) => SafeArea(
-          top: false,
-          child: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(
-              20,
-              8,
-              20,
-              24 + MediaQuery.viewInsetsOf(context).bottom,
-            ),
-            child: Form(
-              key: form,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    current == null ? 'Add address' : 'Edit address',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    initialValue: recipient,
-                    decoration: const InputDecoration(
-                      labelText: 'Recipient name',
+        builder: (context, setSheetState) {
+          final horizontalPadding = (MediaQuery.sizeOf(context).width * .06)
+              .clamp(16.0, 40.0)
+              .toDouble();
+          return SafeArea(
+            top: false,
+            child: SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding,
+                8,
+                horizontalPadding,
+                24 + MediaQuery.viewInsetsOf(context).bottom,
+              ),
+              child: Form(
+                key: form,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      current == null ? 'Add address' : 'Edit address',
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
-                    onChanged: (v) => recipient = v,
-                    validator: (v) =>
-                        v == null || v.trim().isEmpty ? 'Enter a name' : null,
-                  ),
-                  TextFormField(
-                    initialValue: phone,
-                    decoration: const InputDecoration(
-                      labelText: 'Phone number',
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      initialValue: recipient,
+                      decoration: const InputDecoration(
+                        labelText: 'Recipient name',
+                      ),
+                      onChanged: (v) => recipient = v,
+                      validator: (v) =>
+                          v == null || v.trim().isEmpty ? 'Enter a name' : null,
                     ),
-                    keyboardType: TextInputType.phone,
-                    onChanged: (v) => phone = v,
-                    validator: (v) =>
-                        !RegExp(
-                          r'^\+?[\d\s()-]{7,20}$',
-                        ).hasMatch(v?.trim() ?? '')
-                        ? 'Enter a valid phone number'
-                        : null,
-                  ),
-                  TextFormField(
-                    initialValue: address,
-                    decoration: const InputDecoration(
-                      labelText: 'Full delivery address',
+                    TextFormField(
+                      initialValue: phone,
+                      decoration: const InputDecoration(
+                        labelText: 'Phone number',
+                      ),
+                      keyboardType: TextInputType.phone,
+                      onChanged: (v) => phone = v,
+                      validator: (v) =>
+                          !RegExp(
+                            r'^\+?[\d\s()-]{7,20}$',
+                          ).hasMatch(v?.trim() ?? '')
+                          ? 'Enter a valid phone number'
+                          : null,
                     ),
-                    minLines: 2,
-                    maxLines: 4,
-                    onChanged: (v) => address = v,
-                    validator: (v) => v == null || v.trim().isEmpty
-                        ? 'Enter the full address'
-                        : null,
-                  ),
-                  const SizedBox(height: 24),
-                  FilledButton(
-                    onPressed: saving
-                        ? null
-                        : () async {
-                            if (!form.currentState!.validate()) return;
-                            setSheetState(() => saving = true);
-                            final ok = await saveAction(
-                              sheetContext,
-                              () => store.saveAddress(
-                                SavedAddress(
-                                  id:
-                                      current?.id ??
-                                      DateTime.now().microsecondsSinceEpoch
-                                          .toString(),
-                                  recipient: recipient.trim(),
-                                  phone: phone.trim(),
-                                  address: address.trim(),
+                    TextFormField(
+                      initialValue: address,
+                      decoration: const InputDecoration(
+                        labelText: 'Full delivery address',
+                      ),
+                      minLines: 2,
+                      maxLines: 4,
+                      onChanged: (v) => address = v,
+                      validator: (v) => v == null || v.trim().isEmpty
+                          ? 'Enter the full address'
+                          : null,
+                    ),
+                    const SizedBox(height: 24),
+                    FilledButton(
+                      onPressed: saving
+                          ? null
+                          : () async {
+                              if (!form.currentState!.validate()) return;
+                              setSheetState(() => saving = true);
+                              final ok = await saveAction(
+                                sheetContext,
+                                () => store.saveAddress(
+                                  SavedAddress(
+                                    id:
+                                        current?.id ??
+                                        DateTime.now().microsecondsSinceEpoch
+                                            .toString(),
+                                    recipient: recipient.trim(),
+                                    phone: phone.trim(),
+                                    address: address.trim(),
+                                  ),
                                 ),
-                              ),
-                            );
-                            if (!sheetContext.mounted) return;
-                            if (ok) {
-                              Navigator.pop(sheetContext);
-                            } else {
-                              setSheetState(() => saving = false);
-                            }
-                          },
-                    child: Text(saving ? 'Saving...' : 'Save address'),
-                  ),
-                ],
+                              );
+                              if (!sheetContext.mounted) return;
+                              if (ok) {
+                                Navigator.pop(sheetContext);
+                              } else {
+                                setSheetState(() => saving = false);
+                              }
+                            },
+                      child: Text(saving ? 'Saving...' : 'Save address'),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
@@ -112,10 +117,18 @@ class AddressesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final store = AppScope.of(context);
+    final horizontalPadding = (MediaQuery.sizeOf(context).width * .05)
+        .clamp(16.0, 40.0)
+        .toDouble();
     return Scaffold(
       appBar: AppBar(title: const Text('Saved addresses')),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(
+          horizontalPadding,
+          16,
+          horizontalPadding,
+          24,
+        ),
         children: [
           if (store.addresses.isEmpty)
             const Padding(

@@ -3,7 +3,7 @@ import 'package:kids_mart/models/product.dart';
 import 'package:kids_mart/screens/cart_screen.dart';
 import 'package:kids_mart/screens/explore_screen.dart';
 import 'package:kids_mart/screens/home_screen.dart';
-import 'package:kids_mart/screens/profile_screen.dart';
+import 'package:kids_mart/screens/orders_screen.dart';
 import 'package:kids_mart/widgets/glass_nav.dart';
 import 'package:kids_mart/data/app_store.dart';
 
@@ -31,7 +31,7 @@ class _MainShellState extends State<MainShell> {
       HomeScreen(onAdd: _addToCart),
       ExploreScreen(onAdd: _addToCart),
       CartScreen(onContinueShopping: () => setState(() => index = 0)),
-      const ProfileScreen(),
+      const OrdersScreen(),
     ];
 
     return Scaffold(

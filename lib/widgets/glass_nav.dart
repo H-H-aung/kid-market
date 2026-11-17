@@ -17,7 +17,7 @@ class GlassNav extends StatelessWidget {
     (Icons.home_outlined, Icons.home_rounded, 'Home'),
     (Icons.grid_view_outlined, Icons.grid_view_rounded, 'Explore'),
     (Icons.shopping_bag_outlined, Icons.shopping_bag_rounded, 'Cart'),
-    (Icons.person_outline_rounded, Icons.person_rounded, 'Profile'),
+    (Icons.inventory_2_outlined, Icons.inventory_2_rounded, 'Orders'),
   ];
 
   @override

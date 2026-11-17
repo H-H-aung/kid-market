@@ -13,14 +13,21 @@ class ProductGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SliverLayoutBuilder(
     builder: (context, constraints) {
-      final columns = math.max(1, (constraints.crossAxisExtent / 170).floor());
+      final screenWidth = MediaQuery.sizeOf(context).width;
+      final compact = screenWidth < 360;
+      final cardWidth = compact ? 150.0 : 170.0;
+      final columns = math.max(
+        1,
+        (constraints.crossAxisExtent / cardWidth).floor(),
+      );
       final textScale = MediaQuery.textScalerOf(context).scale(1);
       return SliverGrid(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: columns,
-          mainAxisSpacing: 14,
-          crossAxisSpacing: 14,
-          mainAxisExtent: 292 + math.max(0, textScale - 1) * 110,
+          mainAxisSpacing: compact ? 10 : 14,
+          crossAxisSpacing: compact ? 10 : 14,
+          mainAxisExtent:
+              (compact ? 278 : 292) + math.max(0, textScale - 1) * 110,
         ),
         delegate: SliverChildBuilderDelegate(
           (context, i) => ProductCard(
