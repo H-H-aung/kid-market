@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kids_mart/data/app_data.dart' as demo;
+import 'package:kids_mart/api/shop_api.dart';
+import 'package:kids_mart/models/category.dart';
 import 'package:kids_mart/models/product.dart';
 
 class SavedAddress {
@@ -97,8 +99,9 @@ class AppNotification {
 class AppStore extends ChangeNotifier {
   static const storageKey = 'kids_mart.account.v1';
   final Future<bool> Function(String)? _persist;
-  final List<Product> catalog;
-  String _name = '', _email = '';
+  List<Product> _catalog;
+  List<Category> _categories;
+  String _name = '', _email = '', _accessToken = '';
   final Map<String, int> _cart = {};
   final Set<String> _wishlist = {};
   final List<SavedAddress> _addresses = [];
@@ -110,19 +113,29 @@ class AppStore extends ChangeNotifier {
   AppStore({
     SharedPreferences? preferences,
     Future<bool> Function(String)? persist,
-    this.catalog = demo.products,
+    List<Product>? catalog,
+    List<Category>? categories,
   }) : _persist =
            persist ??
            (preferences == null
                ? null
-               : (value) => preferences.setString(storageKey, value)) {
+               : (value) => preferences.setString(storageKey, value)),
+       _catalog = catalog ?? demo.products,
+       _categories = categories ?? demo.categories {
     final raw = preferences?.getString(storageKey);
     if (raw != null) _restore(jsonDecode(raw) as Map<String, dynamic>);
   }
-  static Future<AppStore> open() async =>
-      AppStore(preferences: await SharedPreferences.getInstance());
+  static Future<AppStore> open() async {
+    final store = AppStore(preferences: await SharedPreferences.getInstance());
+    await store.refreshCatalog();
+    return store;
+  }
   String get name => _name;
   String get email => _email;
+  bool get isSignedIn => _accessToken.isNotEmpty;
+  String get accessToken => _accessToken;
+  List<Product> get catalog => List.unmodifiable(_catalog);
+  List<Category> get categories => List.unmodifiable(_categories);
   Map<String, int> get cart => Map.unmodifiable(_cart);
   List<Product> get cartProducts =>
       catalog.where((p) => _cart.containsKey(p.id)).toList();
@@ -154,6 +167,7 @@ class AppStore extends ChangeNotifier {
   Map<String, dynamic> _snapshot() => {
     'name': _name,
     'email': _email,
+    'accessToken': _accessToken,
     'cart': Map<String, int>.from(_cart),
     'wishlist': _wishlist.toList(),
     'addresses': _addresses.map((a) => a.toJson()).toList(),
@@ -167,6 +181,7 @@ class AppStore extends ChangeNotifier {
       ..addAll((j['readNotificationIds'] as List? ?? []).cast<String>());
     _name = j['name'] as String? ?? '';
     _email = j['email'] as String? ?? '';
+    _accessToken = j['accessToken'] as String? ?? '';
     _cart.clear();
     for (final entry in Map<String, dynamic>.from(
       j['cart'] as Map? ?? {},
@@ -223,6 +238,74 @@ class AppStore extends ChangeNotifier {
     _name = name.trim();
     _email = email.trim();
   });
+  Future<void> saveSession({
+    required String name,
+    required String email,
+    required String accessToken,
+  }) => _change(() {
+    if (accessToken.isEmpty) throw ArgumentError('Missing access token');
+    _name = name.trim();
+    _email = email.trim();
+    _accessToken = accessToken;
+  });
+  Future<void> refreshCatalog() async {
+    try {
+      final api = ShopApi();
+      final responses = await Future.wait([api.categories(), api.products(limit: 100)]);
+      final categoryResponse = Map<String, dynamic>.from(responses[0] as Map);
+      final productResponse = Map<String, dynamic>.from(responses[1] as Map);
+      final categoryItems = (categoryResponse['data'] as List)
+          .map((item) => Map<String, dynamic>.from(item as Map))
+          .toList();
+      final productItems = (productResponse['data'] as List)
+          .map((item) => Map<String, dynamic>.from(item as Map))
+          .toList();
+      const colors = [
+        Color(0xFFFFE7A8),
+        Color(0xFFDCEEFF),
+        Color(0xFFFFDAE1),
+        Color(0xFFD1F4E8),
+      ];
+      const icons = [
+        Icons.shopping_bag_rounded,
+        Icons.auto_awesome_rounded,
+        Icons.toys_rounded,
+        Icons.menu_book_rounded,
+      ];
+      _categories = [
+        for (var index = 0; index < categoryItems.length; index++)
+          Category(
+            categoryItems[index]['name'] as String? ?? 'Category',
+            categoryItems[index]['name'] as String? ?? 'Category',
+            icons[index % icons.length],
+            colors[index % colors.length],
+            id: categoryItems[index]['id'].toString(),
+          ),
+      ];
+      final colorForCategory = <String, Color>{
+        for (var index = 0; index < _categories.length; index++)
+          _categories[index].id: colors[index % colors.length],
+      };
+      _catalog = [
+        for (var index = 0; index < productItems.length; index++)
+          Product(
+            productItems[index]['name'] as String? ?? 'Product',
+            productItems[index]['category_name'] as String? ?? '',
+            double.tryParse(productItems[index]['price'].toString()) ?? 0,
+            icons[index % icons.length],
+            colorForCategory[productItems[index]['category_id'].toString()] ??
+                colors[index % colors.length],
+            id: productItems[index]['id'].toString(),
+            categoryId: productItems[index]['category_id'].toString(),
+            description: productItems[index]['description'] as String? ?? '',
+            imageUrl: productItems[index]['image_url'] as String?,
+          ),
+      ];
+      notifyListeners();
+    } catch (_) {
+      // The bundled catalog remains available if the API cannot be reached.
+    }
+  }
   Future<void> markNotificationRead(String id) => _change(() {
     if (!notifications.any((item) => item.id == id)) {
       throw ArgumentError('Notification not found');

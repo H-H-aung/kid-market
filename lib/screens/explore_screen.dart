@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kids_mart/constants/colors.dart';
-import 'package:kids_mart/data/app_data.dart';
+import 'package:kids_mart/data/app_store.dart';
 import 'package:kids_mart/models/product.dart';
 import 'package:kids_mart/widgets/category_widgets.dart';
 import 'package:kids_mart/widgets/home_header.dart';
@@ -22,10 +22,11 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final selected = categories
+    final store = AppScope.of(context);
+    final selected = store.categories
         .where((category) => category.id == _categoryId)
         .firstOrNull;
-    final items = products
+    final items = store.catalog
         .where(
           (product) =>
               (_categoryId == null || product.categoryId == _categoryId) &&
@@ -62,6 +63,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
         ),
         SliverToBoxAdapter(
           child: CategoryRow(
+            items: store.categories,
+            productItems: store.catalog,
             selectedId: _categoryId,
             onSelected: (category) => setState(() => _categoryId = category.id),
           ),

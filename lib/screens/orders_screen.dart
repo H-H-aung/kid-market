@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kids_mart/constants/colors.dart';
 import 'package:kids_mart/data/app_store.dart';
+import 'package:kids_mart/utils/money.dart';
 import 'package:kids_mart/screens/addresses_screen.dart';
+import 'package:kids_mart/screens/profile_screen.dart';
 import 'package:kids_mart/widgets/empty_state.dart';
 
 class OrdersScreen extends StatefulWidget {
@@ -268,6 +270,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
         title: Text(widget.orderId == null ? 'My Orders' : 'Order details'),
         backgroundColor: Colors.transparent,
         actions: [
+          IconButton(
+            tooltip: 'Profile',
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ProfileScreen()),
+            ),
+            icon: const Icon(Icons.person_outline_rounded),
+          ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert_rounded),
             tooltip: 'More options',
@@ -420,7 +430,7 @@ class _OrderDetailsCard extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(child: Text('${line.title} × ${line.quantity}')),
-                Text('\$${(line.totalCents / 100).toStringAsFixed(2)}'),
+                Text(formatMmkCents(line.totalCents)),
               ],
             ),
           ),
@@ -433,7 +443,7 @@ class _OrderDetailsCard extends StatelessWidget {
         Align(
           alignment: Alignment.centerRight,
           child: Text(
-            'Total: \$${(order.totalCents / 100).toStringAsFixed(2)}',
+            'Total: ${formatMmkCents(order.totalCents)}',
             style: const TextStyle(fontWeight: FontWeight.w800),
           ),
         ),

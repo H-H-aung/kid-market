@@ -7,7 +7,7 @@ import 'package:kids_mart/widgets/learning_banner.dart';
 import 'package:kids_mart/widgets/product_grid.dart';
 import 'package:kids_mart/widgets/search_box.dart';
 import 'package:kids_mart/widgets/section_header.dart';
-import 'package:kids_mart/data/app_data.dart';
+import 'package:kids_mart/data/app_store.dart';
 import 'package:kids_mart/widgets/empty_state.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -24,7 +24,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final items = products
+    final store = AppScope.of(context);
+    final items = store.catalog
         .where(
           (p) =>
               p.title.toLowerCase().contains(_query) ||
@@ -45,12 +46,15 @@ class _HomeScreenState extends State<HomeScreen> {
           const SliverToBoxAdapter(child: SectionHeader('Categories')),
           SliverToBoxAdapter(
             child: CategoryRow(
+              items: store.categories,
+              productItems: store.catalog,
               onSelected: (category) => Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => ProductListScreen(
                     title: category.title,
                     categoryId: category.id,
+                    items: store.catalog,
                     onAdd: onAdd,
                   ),
                 ),
@@ -65,6 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 MaterialPageRoute(
                   builder: (_) => ProductListScreen(
                     title: 'Popular Products',
+                    items: store.catalog,
                     onAdd: onAdd,
                   ),
                 ),

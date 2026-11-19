@@ -5,6 +5,7 @@ import 'package:kids_mart/widgets/mini_chip.dart';
 import 'package:kids_mart/widgets/product_cover.dart';
 import 'package:kids_mart/widgets/favourite_button.dart';
 import 'package:kids_mart/data/app_store.dart';
+import 'package:kids_mart/utils/money.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   final Product product;
@@ -59,7 +60,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           ),
           const SizedBox(height: 14),
           Text(
-            '\$${product.price.toStringAsFixed(2)}',
+            formatMmk(product.price),
             style: const TextStyle(
               fontSize: 23,
               color: ink,
@@ -87,7 +88,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 8),
-          Text(switch (product.categoryId) {
+          Text(product.description.isNotEmpty ? product.description : switch (product.categoryId) {
             'toys' =>
               'Build, play and explore with ${product.title}. A hands-on way to practise creativity and problem solving.',
             'courses' =>

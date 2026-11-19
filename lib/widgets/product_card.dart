@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kids_mart/constants/colors.dart';
 import 'package:kids_mart/models/product.dart';
+import 'package:kids_mart/utils/money.dart';
 import 'package:kids_mart/widgets/product_cover.dart';
 import 'package:kids_mart/widgets/favourite_button.dart';
 
@@ -92,7 +93,7 @@ class ProductCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        '\$${product.price.toStringAsFixed(2)}',
+                        formatMmk(product.price),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(

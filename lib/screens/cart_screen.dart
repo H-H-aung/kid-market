@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:kids_mart/data/app_store.dart';
 import 'package:kids_mart/models/product.dart';
 import 'package:kids_mart/screens/addresses_screen.dart';
+import 'package:kids_mart/screens/auth_screen.dart';
 import 'package:kids_mart/screens/order_success_screen.dart';
 import 'package:kids_mart/screens/product_details_screen.dart';
 import 'package:kids_mart/widgets/price_line.dart';
 import 'package:kids_mart/widgets/product_cover.dart';
+import 'package:kids_mart/utils/money.dart';
 
 class CartScreen extends StatefulWidget {
   final VoidCallback onContinueShopping;
@@ -25,6 +27,13 @@ class _CartScreenState extends State<CartScreen> {
   Future<void> _checkout() async {
     if (_busy) return;
     final store = AppScope.of(context);
+    if (!store.isSignedIn) {
+      final signedIn = await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(builder: (_) => const AuthScreen()),
+      );
+      if (signedIn != true || !mounted) return;
+    }
     if (store.defaultAddress == null) {
       await Navigator.push(
         context,
@@ -38,7 +47,7 @@ class _CartScreenState extends State<CartScreen> {
       builder: (context) => AlertDialog(
         title: const Text('Save this order?'),
         content: Text(
-          'Total: \$${(store.totalCents / 100).toStringAsFixed(2)}\n\nThis records the order on this device only. It will not be sent to a shop and no payment will be collected.',
+          'Total: ${formatMmkCents(store.totalCents)}\n\nThis records the order on this device only. It will not be sent to a shop and no payment will be collected.',
         ),
         actions: [
           TextButton(
@@ -185,7 +194,10 @@ class _CartScreenState extends State<CartScreen> {
                             icon: const Icon(Icons.add),
                           ),
                           Text(
-                            '\$${((product.price * 100).round() * store.cart[product.id]! / 100).toStringAsFixed(2)}',
+                            formatMmkCents(
+                              (product.price * 100).round() *
+                                  store.cart[product.id]!,
+                            ),
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
@@ -224,13 +236,13 @@ class _CartScreenState extends State<CartScreen> {
             const Divider(height: 32),
             PriceLine(
               'Subtotal',
-              '\$${(store.totalCents / 100).toStringAsFixed(2)}',
+              formatMmkCents(store.totalCents),
             ),
             const PriceLine('Delivery', 'Free'),
             const SizedBox(height: 12),
             PriceLine(
               'Total',
-              '\$${(store.totalCents / 100).toStringAsFixed(2)}',
+              formatMmkCents(store.totalCents),
               strong: true,
             ),
             const SizedBox(height: 20),

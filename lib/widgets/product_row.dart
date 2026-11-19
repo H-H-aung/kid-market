@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kids_mart/constants/colors.dart';
 import 'package:kids_mart/models/product.dart';
+import 'package:kids_mart/utils/money.dart';
 import 'package:kids_mart/widgets/product_cover.dart';
 
 class ProductRow extends StatelessWidget {
@@ -56,7 +57,7 @@ class ProductRow extends StatelessWidget {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  '\$${product.price.toStringAsFixed(2)}',
+                  formatMmk(product.price),
                   style: const TextStyle(
                     color: ink,
                     fontWeight: FontWeight.w900,

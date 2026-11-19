@@ -32,6 +32,15 @@ class ProductCover extends StatelessWidget {
       builder: (context, constraints) {
         final size = math.min(constraints.maxWidth, constraints.maxHeight);
         final photoAsset = _photoAsset;
+        if (product.imageUrl?.isNotEmpty == true) {
+          return Image.network(
+            product.imageUrl!,
+            fit: BoxFit.cover,
+            errorBuilder: (_, _, _) => Center(
+              child: Icon(product.icon, color: blue, size: size * .35),
+            ),
+          );
+        }
         if (photoAsset != null) {
           return Stack(
             fit: StackFit.expand,

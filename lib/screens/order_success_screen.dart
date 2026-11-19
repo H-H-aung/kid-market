@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kids_mart/data/app_store.dart';
 import 'package:kids_mart/screens/orders_screen.dart';
+import 'package:kids_mart/utils/money.dart';
 
 class OrderSuccessScreen extends StatelessWidget {
   final SavedOrder order;
@@ -29,7 +30,7 @@ class OrderSuccessScreen extends StatelessWidget {
           Text(order.id, textAlign: TextAlign.center),
           const SizedBox(height: 12),
           Text(
-            'Total: \$${(order.totalCents / 100).toStringAsFixed(2)}',
+            'Total: ${formatMmkCents(order.totalCents)}',
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 20),

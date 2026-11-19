@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kids_mart/constants/colors.dart';
 import 'package:kids_mart/data/app_store.dart';
 import 'package:kids_mart/screens/notifications_screen.dart';
+import 'package:kids_mart/screens/wishlist_screen.dart';
 import 'package:kids_mart/widgets/brand_logo.dart';
 
 class HomeHeader extends StatelessWidget {
@@ -23,6 +24,21 @@ class HomeHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
+          IconButton(
+            tooltip: 'Wishlist',
+            onPressed: store == null
+                ? null
+                : () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const WishlistScreen()),
+                  ),
+            style: IconButton.styleFrom(
+              backgroundColor: Colors.white,
+              minimumSize: const Size(48, 48),
+            ),
+            icon: const Icon(Icons.favorite_border_rounded, color: ink),
+          ),
+          const SizedBox(width: 8),
           IconButton(
             tooltip: count == 0
                 ? 'Notifications'
