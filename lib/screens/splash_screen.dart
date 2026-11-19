@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:kids_mart/api/shop_api.dart';
 import 'package:kids_mart/constants/colors.dart';
 import 'package:kids_mart/screens/onboarding_screen.dart';
 import 'package:kids_mart/widgets/brand_logo.dart';
@@ -13,10 +14,12 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   Timer? _navigationTimer;
+  final _shopApi = ShopApi();
 
   @override
   void initState() {
     super.initState();
+    unawaited(_shopApi.healthCheck());
     _navigationTimer = Timer(const Duration(milliseconds: 1200), () {
       if (!mounted) return;
       Navigator.pushReplacement(
