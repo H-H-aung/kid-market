@@ -47,34 +47,38 @@ class KidsMartApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appStore = store ?? AppStore();
     return AppScope(
-      store: store ?? AppStore(),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Kids Mart',
-        theme: ThemeData(
-          useMaterial3: true,
-          scaffoldBackgroundColor: canvas,
-          colorScheme: ColorScheme.fromSeed(seedColor: blue, primary: blue),
-          fontFamily: 'Roboto',
-          appBarTheme: const AppBarTheme(
-            backgroundColor: canvas,
-            surfaceTintColor: Colors.transparent,
-            foregroundColor: ink,
-            centerTitle: true,
-            elevation: 0,
-          ),
-          filledButtonTheme: FilledButtonThemeData(
-            style: FilledButton.styleFrom(
-              minimumSize: const Size(0, 50),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+      store: appStore,
+      child: ListenableBuilder(
+        listenable: appStore,
+        builder: (context, child) => MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Kids Mart',
+          theme: ThemeData(
+            useMaterial3: true,
+            scaffoldBackgroundColor: canvas,
+            colorScheme: ColorScheme.fromSeed(seedColor: blue, primary: blue),
+            fontFamily: 'Roboto',
+            appBarTheme: const AppBarTheme(
+              backgroundColor: canvas,
+              surfaceTintColor: Colors.transparent,
+              foregroundColor: ink,
+              centerTitle: true,
+              elevation: 0,
+            ),
+            filledButtonTheme: FilledButtonThemeData(
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(0, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                textStyle: const TextStyle(fontWeight: FontWeight.w800),
               ),
-              textStyle: const TextStyle(fontWeight: FontWeight.w800),
             ),
           ),
+          home: const SplashScreen(),
         ),
-        home: const SplashScreen(),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kids_mart/constants/colors.dart';
 import 'package:kids_mart/data/app_store.dart';
 import 'package:kids_mart/models/product.dart';
 import 'package:kids_mart/screens/addresses_screen.dart';
@@ -95,13 +96,13 @@ class _CartScreenState extends State<CartScreen> {
     final store = AppScope.of(context);
     final items = store.cartProducts;
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: canvas,
       appBar: AppBar(
         title: const Text('My Cart'),
-        backgroundColor: Colors.transparent,
+        backgroundColor: canvas,
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 150),
+        padding: const EdgeInsets.fromLTRB(16, 18, 16, 150),
         children: [
           if (items.isEmpty) ...[
             const SizedBox(height: 50),
@@ -118,10 +119,49 @@ class _CartScreenState extends State<CartScreen> {
               child: const Text('Continue shopping'),
             ),
           ] else ...[
+            Row(
+              children: [
+                const Expanded(
+                  child: Text(
+                    'Your bag',
+                    style: TextStyle(
+                      color: ink,
+                      fontSize: 21,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 7,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE5F2FF),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '${store.cartCount} ${store.cartCount == 1 ? 'item' : 'items'}',
+                    style: const TextStyle(
+                      color: blue,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
             for (final product in items)
               Card(
+                elevation: 0,
+                color: Colors.white,
+                margin: const EdgeInsets.only(bottom: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: BorderSide(color: ink.withValues(alpha: .05)),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(14),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -134,11 +174,8 @@ class _CartScreenState extends State<CartScreen> {
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            child: TextButton(
-                              style: TextButton.styleFrom(
-                                alignment: Alignment.centerLeft,
-                              ),
-                              onPressed: () => Navigator.push(
+                            child: InkWell(
+                              onTap: () => Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) => ProductDetailsScreen(
@@ -150,7 +187,31 @@ class _CartScreenState extends State<CartScreen> {
                                   ),
                                 ),
                               ),
-                              child: Text(product.title),
+                              borderRadius: BorderRadius.circular(10),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      product.title,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        color: ink,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Text(
+                                      formatMmkCents((product.price * 100).round()),
+                                      style: const TextStyle(color: muted),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
                           IconButton(
@@ -164,41 +225,29 @@ class _CartScreenState extends State<CartScreen> {
                           ),
                         ],
                       ),
-                      Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        spacing: 6,
+                      const SizedBox(height: 8),
+                      Row(
                         children: [
-                          IconButton(
-                            tooltip: 'Decrease ${product.title}',
-                            onPressed: !_busy && store.cart[product.id]! > 1
-                                ? () => _change(
-                                    () => store.setQuantity(
-                                      product,
-                                      store.cart[product.id]! - 1,
-                                    ),
-                                  )
+                          _QuantityControl(
+                            label: '${store.cart[product.id]}',
+                            onDecrease: !_busy && store.cart[product.id]! > 1
+                                ? () => _change(() => store.setQuantity(product, store.cart[product.id]! - 1))
                                 : null,
-                            icon: const Icon(Icons.remove),
-                          ),
-                          Text('${store.cart[product.id]}'),
-                          IconButton(
-                            tooltip: 'Increase ${product.title}',
-                            onPressed: !_busy && store.cart[product.id]! < 99
-                                ? () => _change(
-                                    () => store.setQuantity(
-                                      product,
-                                      store.cart[product.id]! + 1,
-                                    ),
-                                  )
+                            onIncrease: !_busy && store.cart[product.id]! < 99
+                                ? () => _change(() => store.setQuantity(product, store.cart[product.id]! + 1))
                                 : null,
-                            icon: const Icon(Icons.add),
                           ),
+                          const Spacer(),
                           Text(
                             formatMmkCents(
                               (product.price * 100).round() *
                                   store.cart[product.id]!,
                             ),
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              color: ink,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
+                            ),
                           ),
                         ],
                       ),
@@ -207,13 +256,28 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               ),
             const SizedBox(height: 20),
-            Text(
-              'Delivery address',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
             const SizedBox(height: 8),
-            Text(
-              store.defaultAddress?.summary ?? 'Add an address to continue.',
+            const Text('DELIVERY ADDRESS', style: _sectionStyle),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.location_on_outlined, color: blue),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      store.defaultAddress?.summary ?? 'Add an address to continue.',
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ),
             Align(
               alignment: Alignment.centerLeft,
@@ -233,17 +297,23 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               ),
             ),
-            const Divider(height: 32),
-            PriceLine(
-              'Subtotal',
-              formatMmkCents(store.totalCents),
-            ),
-            const PriceLine('Delivery', 'Free'),
-            const SizedBox(height: 12),
-            PriceLine(
-              'Total',
-              formatMmkCents(store.totalCents),
-              strong: true,
+            Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE7F3FF),
+                borderRadius: BorderRadius.circular(22),
+              ),
+              child: Column(
+                children: [
+                  PriceLine('Subtotal', formatMmkCents(store.totalCents)),
+                  const PriceLine('Delivery', 'Free'),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Divider(color: blue.withValues(alpha: .2)),
+                  ),
+                  PriceLine('Total', formatMmkCents(store.totalCents), strong: true),
+                ],
+              ),
             ),
             const SizedBox(height: 20),
             FilledButton(
@@ -261,4 +331,38 @@ class _CartScreenState extends State<CartScreen> {
       ),
     );
   }
+}
+
+const _sectionStyle = TextStyle(
+  color: muted,
+  fontSize: 11,
+  fontWeight: FontWeight.w900,
+  letterSpacing: 1.1,
+);
+
+class _QuantityControl extends StatelessWidget {
+  final String label;
+  final VoidCallback? onDecrease;
+  final VoidCallback? onIncrease;
+  const _QuantityControl({
+    required this.label,
+    this.onDecrease,
+    this.onIncrease,
+  });
+
+  @override
+  Widget build(BuildContext context) => Container(
+    decoration: BoxDecoration(
+      color: const Color(0xFFF0F6FF),
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(onPressed: onDecrease, icon: const Icon(Icons.remove, size: 18)),
+        Text(label, style: const TextStyle(fontWeight: FontWeight.w900)),
+        IconButton(onPressed: onIncrease, icon: const Icon(Icons.add, size: 18)),
+      ],
+    ),
+  );
 }

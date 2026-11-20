@@ -14,61 +14,8 @@ class OrdersScreen extends StatefulWidget {
 }
 
 class _OrdersScreenState extends State<OrdersScreen> {
-  final _orderNumber = TextEditingController();
-  final _verification = TextEditingController();
-  String? _trackedOrderId;
   bool _orderNotifications = true;
   bool _deliveryUpdates = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _trackedOrderId = widget.orderId;
-    _orderNumber.text = widget.orderId ?? '';
-  }
-
-  @override
-  void dispose() {
-    _orderNumber.dispose();
-    _verification.dispose();
-    super.dispose();
-  }
-
-  void _trackOrder(AppStore store) {
-    final id = _orderNumber.text.trim().toUpperCase();
-    if (id.isEmpty || _verification.text.trim().length < 4) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Enter an order number and your secure verification.'),
-        ),
-      );
-      return;
-    }
-    final order = store.orders.where((order) => order.id == id).firstOrNull;
-    if (order == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'This order is not saved on this device. Use verified tracking support to look it up from another device.',
-          ),
-        ),
-      );
-      return;
-    }
-    final digits = _verification.text.replaceAll(RegExp(r'\D'), '');
-    final phoneDigits = order.address.phone.replaceAll(RegExp(r'\D'), '');
-    if (digits.length < 4 ||
-        phoneDigits.length < 4 ||
-        !phoneDigits.endsWith(digits.substring(digits.length - 4))) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('We could not verify those order details.'),
-        ),
-      );
-      return;
-    }
-    setState(() => _trackedOrderId = id);
-  }
 
   void _showMenuSheet(String title) {
     if (title == 'Settings') {
@@ -219,6 +166,25 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     const Divider(),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.person_outline_rounded),
+                      title: const Text('Profile'),
+                      subtitle: const Text('Manage your account details'),
+                      trailing: const Icon(Icons.chevron_right_rounded),
+                      onTap: () {
+                        Navigator.pop(context);
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (!mounted) return;
+                          Navigator.of(this.context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const ProfileScreen(),
+                            ),
+                          );
+                        });
+                      },
+                    ),
+                    const Divider(),
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
                       leading: const Icon(Icons.location_on_outlined),
                       title: const Text('Delivery addresses'),
                       subtitle: const Text(
@@ -227,11 +193,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       trailing: const Icon(Icons.chevron_right_rounded),
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.of(this.context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const AddressesScreen(),
-                          ),
-                        );
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (!mounted) return;
+                          Navigator.of(this.context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const AddressesScreen(),
+                            ),
+                          );
+                        });
                       },
                     ),
                     const ListTile(
@@ -261,23 +230,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   Widget build(BuildContext context) {
     final store = AppScope.of(context);
-    final orders = _trackedOrderId == null
+    final orders = widget.orderId == null
         ? store.orders
-        : store.orders.where((order) => order.id == _trackedOrderId).toList();
+        : store.orders.where((order) => order.id == widget.orderId).toList();
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: canvas,
       appBar: AppBar(
         title: Text(widget.orderId == null ? 'My Orders' : 'Order details'),
-        backgroundColor: Colors.transparent,
+        backgroundColor: canvas,
         actions: [
-          IconButton(
-            tooltip: 'Profile',
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const ProfileScreen()),
-            ),
-            icon: const Icon(Icons.person_outline_rounded),
-          ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert_rounded),
             tooltip: 'More options',
@@ -302,13 +263,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 128),
         children: [
-          _TrackingCard(
-            orderNumber: _orderNumber,
-            verification: _verification,
-            onTrack: () => _trackOrder(store),
-          ),
-          const SizedBox(height: 24),
-          Text('Recent orders', style: Theme.of(context).textTheme.titleLarge),
+          Text('Order History', style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 4),
           const Text('Orders placed as a guest on this device.'),
           const SizedBox(height: 12),
@@ -327,71 +282,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
       ),
     );
   }
-}
-
-class _TrackingCard extends StatelessWidget {
-  final TextEditingController orderNumber;
-  final TextEditingController verification;
-  final VoidCallback onTrack;
-  const _TrackingCard({
-    required this.orderNumber,
-    required this.verification,
-    required this.onTrack,
-  });
-
-  @override
-  Widget build(BuildContext context) => Card(
-    color: const Color(0xFFEAF4FF),
-    child: Padding(
-      padding: const EdgeInsets.all(18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              Icon(Icons.local_shipping_outlined, color: blue),
-              SizedBox(width: 10),
-              Text(
-                'Order Tracking',
-                style: TextStyle(fontWeight: FontWeight.w800),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'On another device? Verify with the last 4 digits of the delivery phone before viewing order details.',
-            style: TextStyle(color: muted, height: 1.35),
-          ),
-          const SizedBox(height: 14),
-          TextField(
-            controller: orderNumber,
-            textCapitalization: TextCapitalization.characters,
-            decoration: const InputDecoration(
-              labelText: 'Order Number',
-              hintText: 'KM-123456789',
-              prefixIcon: Icon(Icons.tag_rounded),
-            ),
-          ),
-          const SizedBox(height: 10),
-          TextField(
-            controller: verification,
-            obscureText: true,
-            decoration: const InputDecoration(
-              labelText: 'Secure verification',
-              hintText: 'Last 4 delivery phone digits',
-              prefixIcon: Icon(Icons.verified_user_outlined),
-            ),
-          ),
-          const SizedBox(height: 14),
-          FilledButton.icon(
-            onPressed: onTrack,
-            icon: const Icon(Icons.track_changes_rounded),
-            label: const Text('Track order'),
-          ),
-        ],
-      ),
-    ),
-  );
 }
 
 class _OrderDetailsCard extends StatelessWidget {

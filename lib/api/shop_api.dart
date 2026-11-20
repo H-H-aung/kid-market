@@ -111,6 +111,26 @@ class ShopApi {
       if (phone != null && phone.trim().isNotEmpty) 'phone': phone.trim(),
     },
   );
+  Future<Object?> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      return await _patch(
+        'auth/change-password',
+        body: {
+          'current_password': currentPassword,
+          'new_password': newPassword,
+        },
+      );
+    } on ApiException catch (error) {
+      if (error.statusCode != 404) rethrow;
+      return _patch(
+        'profile',
+        body: {'current_password': currentPassword, 'password': newPassword},
+      );
+    }
+  }
 
   Future<Object?> _get(
     String path, {

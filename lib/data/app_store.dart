@@ -127,9 +127,10 @@ class AppStore extends ChangeNotifier {
   }
   static Future<AppStore> open() async {
     final store = AppStore(preferences: await SharedPreferences.getInstance());
-    await store.refreshCatalog();
+    await Future.wait([store.refreshCatalog(), store.refreshProfile()]);
     return store;
   }
+
   String get name => _name;
   String get email => _email;
   bool get isSignedIn => _accessToken.isNotEmpty;
@@ -248,10 +249,40 @@ class AppStore extends ChangeNotifier {
     _email = email.trim();
     _accessToken = accessToken;
   });
+  Future<void> signOut() => _change(() {
+    _name = '';
+    _email = '';
+    _accessToken = '';
+  });
+  Future<void> refreshProfile() async {
+    if (!isSignedIn) return;
+    try {
+      final response = await ShopApi(accessToken: _accessToken).me();
+      if (response is! Map) return;
+      final root = Map<String, dynamic>.from(response);
+      final rawUser = root['data'] ?? root['user'] ?? root;
+      if (rawUser is! Map) return;
+      final user = Map<String, dynamic>.from(rawUser);
+      final name = user['name']?.toString().trim();
+      final email = user['email']?.toString().trim();
+      if ((name == null || name.isEmpty) && (email == null || email.isEmpty)) {
+        return;
+      }
+      await _change(() {
+        if (name != null && name.isNotEmpty) _name = name;
+        if (email != null && email.isNotEmpty) _email = email;
+      });
+    } catch (_) {
+      // Keep the saved profile visible when the API is unavailable.
+    }
+  }
   Future<void> refreshCatalog() async {
     try {
       final api = ShopApi();
-      final responses = await Future.wait([api.categories(), api.products(limit: 100)]);
+      final responses = await Future.wait([
+        api.categories(),
+        api.products(limit: 100),
+      ]);
       final categoryResponse = Map<String, dynamic>.from(responses[0] as Map);
       final productResponse = Map<String, dynamic>.from(responses[1] as Map);
       final categoryItems = (categoryResponse['data'] as List)
@@ -306,6 +337,7 @@ class AppStore extends ChangeNotifier {
       // The bundled catalog remains available if the API cannot be reached.
     }
   }
+
   Future<void> markNotificationRead(String id) => _change(() {
     if (!notifications.any((item) => item.id == id)) {
       throw ArgumentError('Notification not found');
@@ -396,16 +428,20 @@ class AppStore extends ChangeNotifier {
   }
 }
 
-class AppScope extends InheritedNotifier<AppStore> {
+class AppScope extends InheritedWidget {
   const AppScope({super.key, required AppStore store, required super.child})
-    : super(notifier: store);
+    : _store = store;
+  final AppStore _store;
   static AppStore? maybeOf(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<AppScope>()?.notifier;
+      context.getInheritedWidgetOfExactType<AppScope>()?._store;
   static AppStore of(BuildContext context) {
     final store = maybeOf(context);
     assert(store != null, 'AppScope is required');
     return store!;
   }
+
+  @override
+  bool updateShouldNotify(AppScope oldWidget) => false;
 }
 
 Future<bool> saveAction(

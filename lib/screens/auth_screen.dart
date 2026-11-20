@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kids_mart/api/api_client.dart';
 import 'package:kids_mart/api/shop_api.dart';
+import 'package:kids_mart/constants/colors.dart';
 import 'package:kids_mart/data/app_store.dart';
+import 'package:kids_mart/widgets/brand_logo.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -31,6 +33,7 @@ class _AuthScreenState extends State<AuthScreen> {
   Future<void> _submit() async {
     if (_busy || !_formKey.currentState!.validate()) return;
     setState(() => _busy = true);
+    final store = AppScope.of(context);
     try {
       final api = ShopApi();
       if (_registering) {
@@ -49,7 +52,7 @@ class _AuthScreenState extends State<AuthScreen> {
         (response as Map)['data'] as Map,
       );
       final user = Map<String, dynamic>.from(data['user'] as Map);
-      await AppScope.of(context).saveSession(
+      await store.saveSession(
         name: user['name'] as String? ?? '',
         email: user['email'] as String? ?? _email.text.trim(),
         accessToken: data['token'] as String,
@@ -77,79 +80,184 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(_registering ? 'Create account' : 'Sign in')),
-    body: SafeArea(
-      child: ListView(
-        padding: const EdgeInsets.all(24),
-        children: [
-          Text(
-            'Sign in to place your order',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          const SizedBox(height: 8),
-          const Text('You can browse and add items to your cart without an account.'),
-          const SizedBox(height: 28),
-          Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                if (_registering) ...[
-                  TextFormField(
-                    controller: _name,
-                    textCapitalization: TextCapitalization.words,
-                    decoration: const InputDecoration(labelText: 'Name'),
-                    validator: (value) => value == null || value.trim().isEmpty
-                        ? 'Enter your name'
-                        : null,
-                  ),
-                  const SizedBox(height: 14),
-                ],
-                TextFormField(
-                  controller: _email,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                  validator: (value) => value == null ||
-                          !RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
-                              .hasMatch(value.trim())
-                      ? 'Enter a valid email'
-                      : null,
+    backgroundColor: canvas,
+    body: DecoratedBox(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFFDDEFFF), Color(0xFFF9FCFF), Color(0xFFFFF4E6)],
+          stops: [0, .48, 1],
+        ),
+      ),
+      child: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(24, 12, 24, 28),
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: IconButton.filledTonal(
+                  tooltip: 'Back',
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.arrow_back_rounded),
                 ),
-                const SizedBox(height: 14),
-                TextFormField(
-                  controller: _password,
-                  obscureText: true,
-                  decoration: const InputDecoration(labelText: 'Password'),
-                  validator: (value) => value == null || value.length < 8
-                      ? 'Use at least 8 characters'
-                      : null,
+              ),
+              const SizedBox(height: 16),
+              const Center(child: BrandLogo(large: true)),
+              const SizedBox(height: 28),
+              Text(
+                _registering ? 'Join the fun!' : 'Welcome back!',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: ink,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w900,
                 ),
-                if (_registering) ...[
-                  const SizedBox(height: 14),
-                  TextFormField(
-                    controller: _phone,
-                    keyboardType: TextInputType.phone,
-                    decoration: const InputDecoration(labelText: 'Phone number'),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _registering
+                    ? 'Create an account to save your details and orders.'
+                    : 'Sign in to manage your profile and place orders.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: muted, height: 1.45),
+              ),
+              const SizedBox(height: 28),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: .92),
+                  borderRadius: BorderRadius.circular(26),
+                  border: Border.all(color: Colors.white, width: 1.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: ink.withValues(alpha: .09),
+                      blurRadius: 26,
+                      offset: const Offset(0, 12),
+                    ),
+                  ],
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      if (_registering) ...[
+                        _AuthField(
+                          controller: _name,
+                          icon: Icons.person_outline_rounded,
+                          label: 'Your name',
+                          capitalization: TextCapitalization.words,
+                          validator: (value) => value == null || value.trim().isEmpty
+                              ? 'Enter your name'
+                              : null,
+                        ),
+                        const SizedBox(height: 14),
+                      ],
+                      _AuthField(
+                        controller: _email,
+                        icon: Icons.mail_outline_rounded,
+                        label: 'Email address',
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) => value == null ||
+                                !RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
+                                    .hasMatch(value.trim())
+                            ? 'Enter a valid email'
+                            : null,
+                      ),
+                      const SizedBox(height: 14),
+                      _AuthField(
+                        controller: _password,
+                        icon: Icons.lock_outline_rounded,
+                        label: 'Password',
+                        obscureText: true,
+                        validator: (value) => value == null || value.length < 8
+                            ? 'Use at least 8 characters'
+                            : null,
+                      ),
+                      if (_registering) ...[
+                        const SizedBox(height: 14),
+                        _AuthField(
+                          controller: _phone,
+                          icon: Icons.phone_outlined,
+                          label: 'Phone number (optional)',
+                          keyboardType: TextInputType.phone,
+                        ),
+                      ],
+                      const SizedBox(height: 22),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton(
+                          onPressed: _busy ? null : _submit,
+                          child: Text(
+                            _busy
+                                ? 'Please wait...'
+                                : _registering
+                                ? 'Create account'
+                                : 'Sign in',
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ],
-            ),
+                ),
+              ),
+              const SizedBox(height: 14),
+              TextButton(
+                onPressed: _busy
+                    ? null
+                    : () => setState(() => _registering = !_registering),
+                child: Text(
+                  _registering
+                      ? 'Already have an account? Sign in'
+                      : 'New here? Create an account',
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Your information is kept safe and private.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: muted, fontSize: 12),
+              ),
+            ],
           ),
-          const SizedBox(height: 24),
-          FilledButton(
-            onPressed: _busy ? null : _submit,
-            child: Text(_busy
-                ? 'Please wait...'
-                : _registering
-                    ? 'Create account and sign in'
-                    : 'Sign in'),
-          ),
-          TextButton(
-            onPressed: _busy ? null : () => setState(() => _registering = !_registering),
-            child: Text(_registering
-                ? 'Already have an account? Sign in'
-                : 'New here? Create an account'),
-          ),
-        ],
+      ),
+    ),
+  );
+}
+
+class _AuthField extends StatelessWidget {
+  final TextEditingController controller;
+  final IconData icon;
+  final String label;
+  final TextInputType? keyboardType;
+  final TextCapitalization capitalization;
+  final bool obscureText;
+  final String? Function(String?)? validator;
+  const _AuthField({
+    required this.controller,
+    required this.icon,
+    required this.label,
+    this.keyboardType,
+    this.capitalization = TextCapitalization.none,
+    this.obscureText = false,
+    this.validator,
+  });
+
+  @override
+  Widget build(BuildContext context) => TextFormField(
+    controller: controller,
+    keyboardType: keyboardType,
+    textCapitalization: capitalization,
+    obscureText: obscureText,
+    validator: validator,
+    decoration: InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icon),
+      filled: true,
+      fillColor: const Color(0xFFF7FAFE),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15),
+        borderSide: BorderSide.none,
       ),
     ),
   );
